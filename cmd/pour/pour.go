@@ -14,12 +14,14 @@ func help(args []string) {
 	fmt.Println(`Available subcommands:
   info [<formula>...]
   install <formula>...
+  link <formula>...
   list, ls [<formula>...]
   outdated
   pin [<formula>...]
   search [--desc] [<text> | /<regex>/]
   shellenv
   uninstall, remove, rm <formula>...
+  unlink <formula>...
   unpin [<formula>...]
   update, up
   upgrade [<formula>...]`)
@@ -96,6 +98,8 @@ func main() {
 		err = cmd.Info(allf, os.Args[2:])
 	case "install":
 		err = cmd.Install(&allf, os.Args[2:])
+	case "link":
+		err = cmd.Link(&allf, os.Args[2:])
 	case "pin":
 		err = cmd.Pin(allf, os.Args[2:])
 	case "unpin":
@@ -104,6 +108,8 @@ func main() {
 		err = cmd.Upgrade(allf, os.Args[2:])
 	case "uninstall", "remove", "rm":
 		err = cmd.Uninstall(allf, os.Args[2:])
+	case "unlink":
+		err = cmd.Unlink(&allf, os.Args[2:])
 	case "list", "ls":
 		err = cmd.List(allf, os.Args[2:])
 	case "outdated":
