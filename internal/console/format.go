@@ -30,7 +30,7 @@ func (s FancyString) Print(strfmt string) string {
 	return fmt.Sprintf("%s"+strfmt+"%s", s.Fmt, s.Content, Reset())
 }
 
-func Columnate(strs FancyStrSlice) string {
+func (strs FancyStrSlice) Columnate() string {
 	nstrs := len(strs)
 	result := ""
 	if nstrs > 0 {
