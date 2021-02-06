@@ -37,13 +37,13 @@ func init() {
   Poured from bottle on {{.Me.InstallTime}}
 {{- else}}Not installed{{end}}
 From: {{url .Me.Bottle.Stable.URL}}
-{{- if .Deps}}
+{{if .Deps -}}
 ===> Dependencies
 {{if .Deps.Required}}Required: {{.Deps.Required}}{{end -}}
 {{if .Deps.Recommended}}Recommended: {{.Deps.Recommended}}{{end -}}
 {{if .Deps.Optional}}Optional: {{.Deps.Optional}}{{end -}}
 {{end}}
-{{- if .Caveats}}
+{{if .Caveats -}}
 ===> Caveats
 {{if .Caveats.Specific}}
 {{- .Caveats.Specific}}
