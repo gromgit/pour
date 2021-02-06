@@ -72,6 +72,7 @@ func Install(allf *formula.Formulas, args []string) (err error) {
 	}
 	if len(errors) == 0 {
 		for _, a := range actions {
+			fmt.Println("==> Installing", a.Name)
 			if err = bottle.Install((*allf)[a.Name], a.Leaf); err != nil {
 				errors = append(errors, a.Name+": "+err.Error())
 			}
