@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gromgit/litebrew/internal/config"
+	"github.com/gromgit/litebrew/internal/console"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -145,12 +146,13 @@ func (formulas Formulas) Filter(fn func(item Formula) bool) Formulas {
 }
 
 func (formulas Formulas) Ls() {
+	installed_fmt := console.Set(console.BOLD_ON) + "%s ✔︎\n" + console.Reset()
 	for _, i := range formulas {
-		var instchar = " "
 		if i.Installed {
-			instchar = "✔︎"
+			fmt.Printf(installed_fmt, i.Name)
+		} else {
+			fmt.Println(i.Name)
 		}
-		fmt.Printf("%s %s %s\n", instchar, i.Name, i.GetVersion())
 	}
 }
 
