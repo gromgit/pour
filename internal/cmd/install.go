@@ -12,14 +12,16 @@ import (
 
 type InstallMap map[string]Action
 
-func resolveDependencies(allf *formula.Formulas, name string, depMap InstallMap, leaf bool) error {
+func resolveDependencies(allf *formula.Formulas, name string, depMap InstallMap, leaf bool) {
 	// Only "local" bottles need apply
 	if strings.Contains(name, "/") {
-		return fmt.Errorf("Unable to install foreign bottle '%s'", name)
+		depMap[name] = Action{ERROR, "Cannot install foreign bottle"}
+		return
 	}
 	f := (*allf)[name]
 	if f.Name == "" {
-		return fmt.Errorf("No such bottle '%s'", name)
+		depMap[name] = Action{ERROR, "Bottle not found"}
+		return
 	}
 	s := NOTHING
 	switch f.Status {
@@ -27,7 +29,8 @@ func resolveDependencies(allf *formula.Formulas, name string, depMap InstallMap,
 		s = INSTALL
 	case formula.OUTDATED:
 		if f.Pinned {
-			return fmt.Errorf("Can't update pinned bottle '%s'", name)
+			depMap[name] = Action{ERROR, "Cannot update pinned bottle"}
+			return
 		} else {
 			s = UPGRADE
 		}
@@ -35,33 +38,47 @@ func resolveDependencies(allf *formula.Formulas, name string, depMap InstallMap,
 	if leaf {
 		s |= LEAF
 	}
-	if depMap[name] == NOTHING {
-		depMap[name] = s
+	if depMap[name].Code == NOTHING {
+		depMap[name] = Action{s, ""}
 	}
 	for _, dep := range f.Dependencies {
-		if err := resolveDependencies(allf, dep, depMap, false); err != nil {
-			return err
-		}
+		resolveDependencies(allf, dep, depMap, false)
 	}
-	return nil
+	depMap[name] = Action{s, ""}
+	return
+}
+
+type ActionPlan struct {
+	Name string
+	Leaf bool
 }
 
 func Install(allf *formula.Formulas, args []string) (err error) {
 	instMap := make(InstallMap)
 	for _, name := range args {
-		if err = resolveDependencies(allf, name, instMap, true); err != nil {
-			return
-		}
+		resolveDependencies(allf, name, instMap, true)
 	}
 	// Do all the installations
 	log.Logf("instMap: %+v\n", instMap)
+	var errors []string
+	var actions []ActionPlan
 	for name, act := range instMap {
-		f := (*allf)[name]
-		if act&ACT_MASK != NOTHING {
-			if err = bottle.Install(f, (act&LEAF > 0)); err != nil {
-				return
+		switch act.Code & ACT_MASK {
+		case ERROR:
+			errors = append(errors, name+": "+act.Message)
+		case INSTALL, UPGRADE:
+			actions = append(actions, ActionPlan{name, act.Code&LEAF > 0})
+		}
+	}
+	if len(errors) == 0 {
+		for _, a := range actions {
+			if err = bottle.Install((*allf)[a.Name], a.Leaf); err != nil {
+				errors = append(errors, a.Name+": "+err.Error())
 			}
 		}
+	}
+	if len(errors) > 0 {
+		fmt.Println("===> ERRORS\n" + strings.Join(errors, "\n"))
 	}
 	return
 }
