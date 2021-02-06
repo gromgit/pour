@@ -27,9 +27,6 @@ func Install(f formula.Formula) error {
 	log.SetOutput(os.Stdout)
 	url := f.Bottle.Stable.URL
 	tarName := filepath.Base(url)
-	if err := os.MkdirAll(cfg.BOTTLEDIR, 0775); err != nil {
-		return err
-	}
 	tarPath := filepath.Join(cfg.BOTTLEDIR, tarName)
 	if _, err := os.Stat(tarPath); err != nil {
 		// Download it first
