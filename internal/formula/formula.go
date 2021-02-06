@@ -13,18 +13,18 @@ import (
 )
 
 type Formula struct {
-	Name              string        `json:"name"`
-	FullName          string        `json:"full_name"`
-	Oldname           interface{}   `json:"oldname"`
-	Aliases           []interface{} `json:"aliases"`
-	VersionedFormulae []interface{} `json:"versioned_formulae"`
-	Desc              string        `json:"desc"`
-	Homepage          string        `json:"homepage"`
+	Name              string   `json:"name"`
+	FullName          string   `json:"full_name"`
+	Oldname           string   `json:"oldname"`
+	Aliases           []string `json:"aliases"`
+	VersionedFormulae []string `json:"versioned_formulae"`
+	Desc              string   `json:"desc"`
+	Homepage          string   `json:"homepage"`
 	Versions          struct {
-		Stable string      `json:"stable"`
-		Devel  interface{} `json:"devel"`
-		Head   interface{} `json:"head"`
-		Bottle bool        `json:"bottle"`
+		Stable string `json:"stable"`
+		// Devel  interface{} `json:"devel"`
+		// Head   interface{} `json:"head"`
+		Bottle bool `json:"bottle"`
 	} `json:"versions"`
 	Revision      int `json:"revision"`
 	VersionScheme int `json:"version_scheme"`
@@ -58,20 +58,20 @@ type Formula struct {
 			} `json:"files"`
 		} `json:"stable"`
 	} `json:"bottle,omitempty"`
-	KegOnly                 bool          `json:"keg_only"`
-	BottleDisabled          bool          `json:"bottle_disabled"`
-	Options                 []interface{} `json:"options"`
-	BuildDependencies       []interface{} `json:"build_dependencies"`
-	Dependencies            []interface{} `json:"dependencies"`
-	RecommendedDependencies []interface{} `json:"recommended_dependencies"`
-	OptionalDependencies    []interface{} `json:"optional_dependencies"`
-	UsesFromMacos           []interface{} `json:"uses_from_macos"`
-	Requirements            []interface{} `json:"requirements"`
-	ConflictsWith           []interface{} `json:"conflicts_with"`
-	Caveats                 interface{}   `json:"caveats"`
+	KegOnly                 bool     `json:"keg_only"`
+	BottleDisabled          bool     `json:"bottle_disabled"`
+	Options                 []string `json:"options"`
+	BuildDependencies       []string `json:"build_dependencies"`
+	Dependencies            []string `json:"dependencies"`
+	RecommendedDependencies []string `json:"recommended_dependencies"`
+	OptionalDependencies    []string `json:"optional_dependencies"`
+	UsesFromMacos           []string `json:"uses_from_macos"`
+	Requirements            []string `json:"requirements"`
+	ConflictsWith           []string `json:"conflicts_with"`
+	Caveats                 string   `json:"caveats"`
 	Installed               bool
 	/*
-		LinkedKeg               interface{}   `json:"linked_keg"`
+		LinkedKeg               string   `json:"linked_keg"`
 		Pinned                  bool          `json:"pinned"`
 		Outdated                bool          `json:"outdated"`
 		Bottle                  struct {
