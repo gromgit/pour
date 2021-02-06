@@ -89,6 +89,9 @@ func main() {
 		}
 	}
 	allf.Load(json_path)
+	if err := cmd.Install(&allf, cfg.OS_DEPS); err != nil {
+		fatal("Unable to install OS prerequisites:", err)
+	}
 
 	var err error
 	switch os.Args[1] {

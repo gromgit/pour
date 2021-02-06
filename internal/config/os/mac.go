@@ -11,6 +11,10 @@ const OS_NAME = "macOS"
 const JSON_URL = "https://formulae.brew.sh/api/formula.json"
 const DEFAULT_PREFIX = "/usr/local"
 
+func GetDeps() []string {
+	return []string{}
+}
+
 func GetOS() (os string) {
 	verCmd := exec.Command("defaults", "read", "loginwindow", "SystemVersionStampAsString")
 	if verOut, err := verCmd.Output(); err != nil {
