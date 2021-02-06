@@ -1,6 +1,7 @@
 package bottle
 
 import (
+	"fmt"
 	cfg "github.com/gromgit/pour/internal/config"
 	"github.com/gromgit/pour/internal/formula"
 	"github.com/gromgit/pour/internal/log"
@@ -94,6 +95,9 @@ func Link(pkgSubdir string) error {
 }
 
 func Install(f formula.Formula, leaf bool) error {
+	if !f.Installable() {
+		return fmt.Errorf("%s is not installable", f.Name)
+	}
 	url := f.Bottle.Stable.URL
 	tarName := filepath.Base(url)
 	tarPath := filepath.Join(cfg.BOTTLEDIR, tarName)
