@@ -59,6 +59,10 @@ func (allf *Formulas) Load(json_path string) error {
 			baseVal := reflect.ValueOf(i.Bottle.Stable.Files).FieldByName(cfg.OS_FIELD)
 			i.Bottle.Stable.URL = baseVal.FieldByName("URL").String()
 			i.Bottle.Stable.Sha256 = baseVal.FieldByName("Sha256").String()
+			if i.Bottle.Stable.URL == "" {
+				// Can't do anything with this...
+				continue
+			}
 			// Record it officially
 			(*allf)[i.Name] = i
 		}
