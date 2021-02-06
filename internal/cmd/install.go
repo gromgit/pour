@@ -10,16 +10,7 @@ import (
 	"strings"
 )
 
-const (
-	NOTHING = iota
-	UPGRADE
-	INSTALL
-	// Leaf bit
-	LEAF     = 1 << iota
-	ACT_MASK = LEAF - 1
-)
-
-type InstallMap map[string]int
+type InstallMap map[string]Action
 
 func resolveDependencies(allf *formula.Formulas, name string, depMap InstallMap, leaf bool) error {
 	// Only "local" bottles need apply
