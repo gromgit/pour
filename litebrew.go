@@ -15,8 +15,8 @@ func help(args []string) {
   search [--desc] [<text> | /<regex>/]
   info [<formula>...]
   install <formula>...
-  pin <formula>...
-  unpin <formula>...
+  pin [<formula>...]
+  unpin [<formula>...]
   update, up
   outdated [-q|--quiet] [-v|--verbose] [formula]
   upgrade [<formula>...]
