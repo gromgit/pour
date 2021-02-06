@@ -1,6 +1,7 @@
 package log
 
 import (
+	"github.com/davecgh/go-spew/spew"
 	"log"
 	"os"
 )
@@ -21,5 +22,11 @@ func Log(v ...interface{}) {
 func Logf(s string, v ...interface{}) {
 	if logger != nil {
 		logger.Printf(s, v...)
+	}
+}
+
+func Spew(v ...interface{}) {
+	if logger != nil {
+		logger.Println(spew.Sdump(v...))
 	}
 }
