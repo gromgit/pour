@@ -60,7 +60,7 @@ func (strs FancyStrSlice) Columnate() string {
 			} else {
 				cols = config.ScreenWidth / maxwidth
 			}
-			stride := nstrs / cols
+			stride := (nstrs + cols - 1) / cols
 			fmt.Fprintf(os.Stderr, "Fmt: %q  Screen: (%d,%d)  Cols: %d  Stride: %d\n", strfmt, 0, config.ScreenWidth, cols, stride)
 			// Let's run through the elements
 			if stride == 0 {
