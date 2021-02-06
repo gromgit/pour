@@ -56,6 +56,18 @@ func getLinkables(pourRoot string) (list []string, err error) {
 	return
 }
 
+func linkOne(src, dest string) error {
+	rel, err := filepath.Rel(filepath.Dir(dest), src)
+	if err != nil {
+		return err
+	}
+	os.Remove(dest)
+	if err := os.MkdirAll(filepath.Dir(dest), 0775); err != nil {
+		return err
+	}
+	return os.Symlink(rel, dest)
+}
+
 // Unlink("<name>/<version>")
 func Unlink(pkgSubdir string) error {
 	if list, err := getLinkables(filepath.Join(cfg.CELLAR, pkgSubdir)); err != nil {
@@ -79,33 +91,15 @@ func Link(pkgSubdir string) error {
 	if list, err := getLinkables(pkgDir); err != nil {
 		return err
 	} else {
+		pkgName := filepath.Dir(pkgSubdir)
 		cfg.Log("Link paths:", list)
 		for _, p := range list {
 			dest := filepath.Join(cfg.PREFIX, p)
 			src := filepath.Join(pkgDir, p)
-			rel, err := filepath.Rel(filepath.Dir(dest), src)
-			if err != nil {
-				return err
-			}
-			os.Remove(dest)
-			if err := os.MkdirAll(filepath.Dir(dest), 0775); err != nil {
-				return err
-			}
-			if err := os.Symlink(rel, dest); err != nil {
-				return err
-			}
+			linkOne(src, dest)
 		}
 		// Add link to LINKDIR
-		os.Mkdir(cfg.LINKDIR, 0775)
-		linkRel, err := filepath.Rel(cfg.LINKDIR, pkgDir)
-		if err != nil {
-			return err
-		}
-		link := filepath.Join(cfg.LINKDIR, filepath.Dir(pkgSubdir))
-		if err := os.Symlink(linkRel, link); err != nil {
-			return err
-		}
-		cfg.Log("Link the link:", linkRel, link)
+		linkOne(pkgDir, filepath.Join(cfg.LINKDIR, pkgName))
 	}
 	return nil
 }
