@@ -18,6 +18,7 @@ const LINKDIR = VAR_PATH + "/linked"
 const BOTTLEDIR = VAR_PATH + "/bottles"
 const TEMPDIR = VAR_PATH + "/tmp"
 
+var SYSDIRS = []string{CELLAR, PINDIR, LINKDIR, BOTTLEDIR, TEMPDIR}
 var OS_FIELD = oscfg.GetOS()
 
 // Private logger instance

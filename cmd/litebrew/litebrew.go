@@ -34,8 +34,16 @@ func baseChecks() {
 	// Check for basic writability in DEFAULT_PREFIX
 	if _, err := os.Stat(cfg.DEFAULT_PREFIX); os.IsNotExist(err) {
 		fatal("Litebrew base dir", cfg.DEFAULT_PREFIX, "doesn't exist")
-	} else if err = os.MkdirAll(cfg.VAR_PATH, 0775); err != nil {
-		fatal("Can't create", cfg.VAR_PATH, ":", err)
+	} else {
+		failedDirs := []string{}
+		for _, d := range cfg.SYSDIRS {
+			if err := os.MkdirAll(d, 0775); err != nil {
+				failedDirs = append(failedDirs, d)
+			}
+		}
+		if len(failedDirs) > 0 {
+			fatal("Can't create the following dirs:", failedDirs)
+		}
 	}
 }
 
