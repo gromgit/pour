@@ -16,7 +16,7 @@ func Update(path string) error {
 	}
 	fmt.Printf("Updating %s\n", path)
 	if err := net.DownloadFile(path, config.JSON_URL); err != nil {
-		return errors.New("cannot download " + config.JSON_URL)
+		return errors.New("cannot download " + config.JSON_URL + ": " + err.Error())
 	}
 	return nil
 }
