@@ -5,6 +5,7 @@ import (
 	"fmt"
 	cfg "github.com/gromgit/pour/internal/config"
 	"github.com/gromgit/pour/internal/console"
+	"github.com/gromgit/pour/internal/log"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -28,43 +29,40 @@ func (allf *Formulas) Load(json_path string) error {
 	var instcount = 0
 	*allf = make(Formulas)
 	for _, i := range result {
-		if !i.BottleDisabled && i.Installable() && i.Versions.Bottle {
-			i.Status = MISSING
-			// Check if installed
-			optLink := filepath.Join(cfg.OPTDIR, i.Name)
-			if stat, err := os.Stat(optLink); err == nil {
-				// Some version is installed, but which one?
-				instPath, err := filepath.EvalSymlinks(optLink)
-				if err == nil {
-					instVer := filepath.Base(instPath)
-					if instVer == i.GetVersion() {
-						// Latest-n-greatest
-						i.Status = INSTALLED
-						i.InstallDir = instPath
-						i.InstallTime = stat.ModTime().Format("2006-01-02 at 15:04:05")
-						i.Pinned = isPinned(i.Name, stat)
-						i.Leaf = isLeaf(i.Name, stat)
-						instcount++
-					} else {
-						i.Status = OUTDATED
-						i.InstallDir = instPath
-						i.InstallTime = stat.ModTime().Format("2006-01-02 at 15:04:05")
-						i.Pinned = isPinned(i.Name, stat)
-						i.Leaf = isLeaf(i.Name, stat)
-						instcount++
-					}
+		i.Status = MISSING
+		// Check if installed
+		optLink := filepath.Join(cfg.OPTDIR, i.Name)
+		if stat, err := os.Stat(optLink); err == nil {
+			// Some version is installed, but which one?
+			instPath, err := filepath.EvalSymlinks(optLink)
+			if err == nil {
+				instVer := filepath.Base(instPath)
+				if instVer == i.GetVersion() {
+					// Latest-n-greatest
+					i.Status = INSTALLED
+					i.InstallDir = instPath
+					i.InstallTime = stat.ModTime().Format("2006-01-02 at 15:04:05")
+					i.Pinned = isPinned(i.Name, stat)
+					i.Leaf = isLeaf(i.Name, stat)
+					instcount++
+				} else {
+					i.Status = OUTDATED
+					i.InstallDir = instPath
+					i.InstallTime = stat.ModTime().Format("2006-01-02 at 15:04:05")
+					i.Pinned = isPinned(i.Name, stat)
+					i.Leaf = isLeaf(i.Name, stat)
+					instcount++
 				}
 			}
-			// Look up proper URL / SHA256
-			baseVal := reflect.ValueOf(i.Bottle.Stable.Files).FieldByName(cfg.OS_FIELD)
-			i.Bottle.Stable.URL = baseVal.FieldByName("URL").String()
-			i.Bottle.Stable.Sha256 = baseVal.FieldByName("Sha256").String()
-			if i.Bottle.Stable.URL == "" {
-				// Can't do anything with this...
-				continue
-			}
-			// Record it officially
-			(*allf)[i.Name] = i
+		}
+		// Look up proper URL / SHA256
+		baseVal := reflect.ValueOf(i.Bottle.Stable.Files).FieldByName(cfg.OS_FIELD)
+		i.Bottle.Stable.URL = baseVal.FieldByName("URL").String()
+		i.Bottle.Stable.Sha256 = baseVal.FieldByName("Sha256").String()
+		// Record it under both short and full names
+		(*allf)[i.Name] = i
+		if i.FullName != "" && i.FullName != i.Name {
+			(*allf)[i.FullName] = i
 		}
 	}
 	// Now run through all bottles to populate Users list
@@ -75,6 +73,7 @@ func (allf *Formulas) Load(json_path string) error {
 			}
 		}
 	}
+	log.Spew("FORMULAS:", (*allf))
 	fmt.Fprintf(os.Stderr, "FORMULAS: Total = %d, Bottled = %d, Installed = %d\n", len(result), len(*allf), instcount)
 	return nil
 }
@@ -147,6 +146,8 @@ func (allf Formulas) MkStrList() (list console.FancyStrSlice) {
 	for _, i := range allf {
 		if i.Status == INSTALLED {
 			list = append(list, console.FancyString{i.Out(), console.Bold})
+		} else if !i.Installable() {
+			list = append(list, console.FancyString{i.Out(), console.Dim})
 		} else {
 			list = append(list, console.FancyString{i.Out(), ""})
 		}
@@ -176,8 +177,11 @@ func (formula Formula) GetVersion() string {
 }
 
 func (formula Formula) Installable() bool {
+	/* TODO: Figure out a more accurate test
 	return strings.HasPrefix(formula.Bottle.Stable.Cellar, ":any") ||
 		formula.Bottle.Stable.Cellar == cfg.CELLAR
+	*/
+	return formula.Bottle.Stable.URL != ""
 }
 
 func (formula Formula) Installed() bool {
