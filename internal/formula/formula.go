@@ -62,6 +62,14 @@ func (allf *Formulas) Load(json_path string) error {
 			(*allf)[i.Name] = i
 		}
 	}
+	// Now run through all bottles to populate Users list
+	for b, _ := range *allf {
+		for _, dep := range (*allf)[b].Dependencies {
+			if (*allf)[dep].Name != "" {
+				(*allf)[dep] = (*allf)[dep].AddUser(b)
+			}
+		}
+	}
 	fmt.Fprintf(os.Stderr, "FORMULAS: Total = %d, Bottled = %d, Installed = %d\n", len(result), len(*allf), instcount)
 	return nil
 }
@@ -232,4 +240,9 @@ func (f Formula) GetCaveatReport() (results map[string]string) {
 		results["Prefix"] = f.Bottle.Stable.Prefix
 	}
 	return
+}
+
+func (f Formula) AddUser(u string) Formula {
+	f.Users = append(f.Users, u)
+	return f
 }

@@ -74,6 +74,7 @@ type Formula struct {
 	InstallTime             string   `json:"-"`
 	Pinned                  bool     `json:"-"`
 	Leaf                    bool     `json:"-"`
+	Users                   []string `json:"-"`
 }
 
 type Formulas map[string]Formula
