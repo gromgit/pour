@@ -85,6 +85,7 @@ type Formula struct {
 	Caveats                 string   `json:"caveats"`
 	Status                  int      `json:"-"`
 	InstallDir              string   `json:"-"`
+	InstallTime             string   `json:"-"`
 	Pinned                  bool     `json:"-"`
 }
 
@@ -110,18 +111,28 @@ func (formulas *Formulas) Load(json_path string) error {
 	*formulas = make(Formulas)
 	for _, i := range result {
 		if !i.BottleDisabled && i.Versions.Bottle {
+			i.Status = MISSING
 			// Check if installed
-			i.InstallDir = filepath.Join(i.GetCellar(), i.Name, i.GetVersion())
-			if stat, err := os.Stat(i.InstallDir); err == nil {
+			targetParent := filepath.Join(i.GetCellar(), i.Name)
+			targetDir := filepath.Join(targetParent, i.GetVersion())
+			if stat, err := os.Stat(targetDir); err == nil {
 				i.Status = INSTALLED
+				i.InstallDir = targetDir
+				i.InstallTime = stat.ModTime().Format("2006-01-02 at 15:04:05")
 				i.Pinned = isPinned(i.Name, stat)
 				instcount++
-			} else if stat, err := os.Stat(filepath.Dir(i.InstallDir)); err == nil {
-				i.Status = OUTDATED
-				i.Pinned = isPinned(i.Name, stat)
-				instcount++
-			} else {
-				i.Status = MISSING
+			} else if _, err := os.Stat(targetParent); err == nil {
+				// Let's find the latest bottle installed here
+				if bottles, err := filepath.Glob(filepath.Join(targetParent, "*")); err == nil && len(bottles) > 0 {
+					// TODO: Find a better choice than the first one
+					if stat, err := os.Stat(bottles[0]); err == nil {
+						i.Status = OUTDATED
+						i.InstallDir = bottles[0]
+						i.InstallTime = stat.ModTime().Format("2006-01-02 at 15:04:05")
+						i.Pinned = isPinned(i.Name, stat)
+						instcount++
+					}
+				}
 			}
 			// Look up proper URL / SHA256
 			baseVal := reflect.ValueOf(i.Bottle.Stable.Files).FieldByName(config.OS_FIELD)
