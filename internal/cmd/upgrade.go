@@ -5,6 +5,6 @@ import (
 	"github.com/gromgit/litebrew/internal/formula"
 )
 
-func Upgrade(formulas formula.Formulas, args []string) {
+func Upgrade(allf formula.Formulas, args []string) {
 	fmt.Println("This command has not been implemented yet.")
 }

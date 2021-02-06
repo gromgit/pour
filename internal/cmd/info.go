@@ -68,11 +68,11 @@ For pkg-config to find {{.Caveats.Name}} you may need to set:
 {{- end}}`))
 }
 
-func Info(formulas formula.Formulas, args []string) {
+func Info(allf formula.Formulas, args []string) {
 	tMain := templates["main"]
 	for _, i := range args {
-		if f := formulas[i]; f.Name != "" {
-			err := tMain.Execute(os.Stdout, templateData{f, formulas, f.GetDepReport(formulas), f.GetCaveatReport()})
+		if f := allf[i]; f.Name != "" {
+			err := tMain.Execute(os.Stdout, templateData{f, allf, f.GetDepReport(allf), f.GetCaveatReport()})
 			if err != nil {
 				log.Println("executing main template:", err)
 				continue

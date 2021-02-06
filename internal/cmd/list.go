@@ -7,10 +7,10 @@ import (
 	"path/filepath"
 )
 
-func List(formulas formula.Formulas, args []string) {
+func List(allf formula.Formulas, args []string) {
 	if len(args) > 0 {
 		for _, name := range args {
-			f := formulas[name]
+			f := allf[name]
 			if f.Name != "" {
 				err := filepath.Walk(f.InstallDir,
 					func(path string, info os.FileInfo, err error) error {
@@ -34,7 +34,7 @@ func List(formulas formula.Formulas, args []string) {
 		}
 	} else {
 		// List installed bottles
-		formulas.Filter(
+		allf.Filter(
 			func(item formula.Formula) bool {
 				return item.Status != formula.MISSING
 			}).
@@ -42,8 +42,8 @@ func List(formulas formula.Formulas, args []string) {
 	}
 }
 
-func Outdated(formulas formula.Formulas, args []string) {
-	formulas.Filter(
+func Outdated(allf formula.Formulas, args []string) {
+	allf.Filter(
 		func(item formula.Formula) bool {
 			return item.Status == formula.OUTDATED
 		}).

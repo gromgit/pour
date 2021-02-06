@@ -5,12 +5,12 @@ import (
 	"github.com/gromgit/litebrew/internal/formula"
 )
 
-func Install(formulas *formula.Formulas, args []string) {
+func Install(allf *formula.Formulas, args []string) {
 	for _, name := range args {
-		f := (*formulas)[name]
+		f := (*allf)[name]
 		if f.Name != "" {
 			// First install all dependencies
-			Install(formulas, f.Dependencies)
+			Install(allf, f.Dependencies)
 			switch f.Status {
 			case formula.INSTALLED:
 				fmt.Println("DEBUG: Already installed", f.Name)

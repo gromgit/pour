@@ -96,7 +96,7 @@ var StatusMap = map[int]string{
 	OUTDATED:  " ✗",
 }
 
-func (formulas *Formulas) Load(json_path string) error {
+func (allf *Formulas) Load(json_path string) error {
 	// Parse the formulas JSON
 	var result []Formula
 	if f, err := os.Open(json_path); err != nil {
@@ -108,7 +108,7 @@ func (formulas *Formulas) Load(json_path string) error {
 	}
 	// Post-process the results
 	var instcount = 0
-	*formulas = make(Formulas)
+	*allf = make(Formulas)
 	for _, i := range result {
 		if !i.BottleDisabled && i.Versions.Bottle {
 			i.Status = MISSING
@@ -139,10 +139,10 @@ func (formulas *Formulas) Load(json_path string) error {
 			i.Bottle.Stable.URL = baseVal.FieldByName("URL").String()
 			i.Bottle.Stable.Sha256 = baseVal.FieldByName("Sha256").String()
 			// Record it officially
-			(*formulas)[i.Name] = i
+			(*allf)[i.Name] = i
 		}
 	}
-	fmt.Fprintf(os.Stderr, "FORMULAS: Total = %d, Bottled = %d, Installed = %d\n", len(result), len(*formulas), instcount)
+	fmt.Fprintf(os.Stderr, "FORMULAS: Total = %d, Bottled = %d, Installed = %d\n", len(result), len(*allf), instcount)
 	return nil
 }
 
@@ -192,9 +192,9 @@ func (formula Formula) Out() (out string) {
 	return
 }
 
-func (formulas Formulas) Filter(fn func(item Formula) bool) Formulas {
+func (allf Formulas) Filter(fn func(item Formula) bool) Formulas {
 	result := make(Formulas)
-	for _, i := range formulas {
+	for _, i := range allf {
 		if fn(i) {
 			result[i.Name] = i
 		}
@@ -202,8 +202,8 @@ func (formulas Formulas) Filter(fn func(item Formula) bool) Formulas {
 	return result
 }
 
-func (formulas Formulas) MkStrList() (list console.FancyStrSlice) {
-	for _, i := range formulas {
+func (allf Formulas) MkStrList() (list console.FancyStrSlice) {
+	for _, i := range allf {
 		if i.Status == INSTALLED {
 			list = append(list, console.FancyString{i.Out(), console.Bold})
 		} else {
@@ -214,8 +214,8 @@ func (formulas Formulas) MkStrList() (list console.FancyStrSlice) {
 	return
 }
 
-func (formulas Formulas) Ls() {
-	fmt.Print(formulas.MkStrList().Columnate())
+func (allf Formulas) Ls() {
+	fmt.Print(allf.MkStrList().Columnate())
 }
 
 func (formula Formula) GetCellar() string {
@@ -246,12 +246,12 @@ const (
 )
 
 // Formula reports (mostly for "info" cmd)
-func (formulas Formulas) GetDepStr(depList []string) (result string) {
+func (allf Formulas) GetDepStr(depList []string) (result string) {
 	deps := make(Formulas)
 	for _, d := range depList {
-		f := formulas[d]
+		f := allf[d]
 		if f.Name != "" {
-			deps[d] = formulas[d]
+			deps[d] = allf[d]
 		}
 	}
 	if len(deps) > 0 {
@@ -260,7 +260,7 @@ func (formulas Formulas) GetDepStr(depList []string) (result string) {
 	return
 }
 
-func (f Formula) GetDepReport(all Formulas) (results map[string]string) {
+func (f Formula) GetDepReport(allf Formulas) (results map[string]string) {
 	results = make(map[string]string)
 	for k, v := range map[string][]string{
 		"Required":    f.Dependencies,
@@ -268,7 +268,7 @@ func (f Formula) GetDepReport(all Formulas) (results map[string]string) {
 		"Optional":    f.OptionalDependencies,
 	} {
 		if len(v) > 0 {
-			results[k] = all.GetDepStr(v)
+			results[k] = allf.GetDepStr(v)
 		}
 	}
 	return

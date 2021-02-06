@@ -6,11 +6,11 @@ import (
 	"os"
 )
 
-func Pin(formulas formula.Formulas, args []string) {
+func Pin(allf formula.Formulas, args []string) {
 	if len(args) > 0 {
 		// Pin some formulas
 		for _, i := range args {
-			if f := formulas[i]; f.Name == "" {
+			if f := allf[i]; f.Name == "" {
 				fmt.Fprintf(os.Stderr, "WARNING: Formula '%s' not found\n", i)
 			} else {
 				if err := f.Pin(); err != nil {
@@ -21,7 +21,7 @@ func Pin(formulas formula.Formulas, args []string) {
 		}
 	} else {
 		// List all pinned bottles
-		formulas.Filter(
+		allf.Filter(
 			func(item formula.Formula) bool {
 				return item.Pinned
 			}).
@@ -29,11 +29,11 @@ func Pin(formulas formula.Formulas, args []string) {
 	}
 }
 
-func Unpin(formulas formula.Formulas, args []string) {
+func Unpin(allf formula.Formulas, args []string) {
 	if len(args) > 0 {
 		// Unpin some formulas
 		for _, i := range args {
-			if f := formulas[i]; f.Name == "" {
+			if f := allf[i]; f.Name == "" {
 				fmt.Fprintf(os.Stderr, "WARNING: Formula '%s' not found\n", i)
 			} else {
 				if err := f.Unpin(); err != nil {
@@ -44,7 +44,7 @@ func Unpin(formulas formula.Formulas, args []string) {
 		}
 	} else {
 		// List all unpinned bottles
-		formulas.Filter(
+		allf.Filter(
 			func(item formula.Formula) bool {
 				return !item.Pinned
 			}).

@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-var formulas formula.Formulas
+var allf formula.Formulas
 
 func help(args []string) {
 	fmt.Println(`Available subcommands:
@@ -76,27 +76,27 @@ func main() {
 			fatal("Unable to update local JSON:", err)
 		}
 	}
-	formulas.Load(json_path)
+	allf.Load(json_path)
 
 	switch os.Args[1] {
 	case "search":
-		cmd.Search(formulas, os.Args[2:])
+		cmd.Search(allf, os.Args[2:])
 	case "info":
-		cmd.Info(formulas, os.Args[2:])
+		cmd.Info(allf, os.Args[2:])
 	case "install":
-		cmd.Install(&formulas, os.Args[2:])
+		cmd.Install(&allf, os.Args[2:])
 	case "pin":
-		cmd.Pin(formulas, os.Args[2:])
+		cmd.Pin(allf, os.Args[2:])
 	case "unpin":
-		cmd.Unpin(formulas, os.Args[2:])
+		cmd.Unpin(allf, os.Args[2:])
 	case "upgrade":
-		cmd.Upgrade(formulas, os.Args[2:])
+		cmd.Upgrade(allf, os.Args[2:])
 	case "uninstall", "remove", "rm":
-		cmd.Uninstall(formulas, os.Args[2:])
+		cmd.Uninstall(allf, os.Args[2:])
 	case "list", "ls":
-		cmd.List(formulas, os.Args[2:])
+		cmd.List(allf, os.Args[2:])
 	case "outdated":
-		cmd.Outdated(formulas, os.Args[2:])
+		cmd.Outdated(allf, os.Args[2:])
 	default:
 		fmt.Printf("Unknown subcommand '%s'\n", os.Args[1])
 		os.Exit(1)

@@ -35,13 +35,13 @@ func DescGetter(item formula.Formula) string {
 	return item.Desc
 }
 
-func Search(formulas formula.Formulas, args []string) {
+func Search(allf formula.Formulas, args []string) {
 	var matcher func(s string) bool
 	var getter func(item formula.Formula) string
 	fmt.Printf("Doing search %v\n", args)
 	if len(args) == 0 {
 		// Return all bottles
-		formulas.Ls()
+		allf.Ls()
 	} else {
 		// Filter first
 		if strings.HasPrefix(args[0], "--desc") {
@@ -58,7 +58,7 @@ func Search(formulas formula.Formulas, args []string) {
 			// String search
 			matcher = StringMatcher(spec)
 		}
-		formulas.Filter(
+		allf.Filter(
 			func(item formula.Formula) bool {
 				return matcher(getter(item))
 			}).
