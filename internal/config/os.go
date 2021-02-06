@@ -73,11 +73,11 @@ func SysDirs() []string {
 }
 
 func Log(v ...interface{}) {
-	logger.Println(v)
+	logger.Println(v...)
 }
 
 func Logf(s string, v ...interface{}) {
-	logger.Printf(s, v)
+	logger.Printf(s, v...)
 }
 
 func init() {
