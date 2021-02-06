@@ -21,7 +21,11 @@ func Pin(formulas formula.Formulas, args []string) {
 		}
 	} else {
 		// List all pinned bottles
-		formulas.Filter(func(item formula.Formula) bool { return item.Pinned }).Ls()
+		formulas.Filter(
+			func(item formula.Formula) bool {
+				return item.Pinned
+			}).
+			Ls()
 	}
 }
 
@@ -40,6 +44,10 @@ func Unpin(formulas formula.Formulas, args []string) {
 		}
 	} else {
 		// List all unpinned bottles
-		formulas.Filter(func(item formula.Formula) bool { return !item.Pinned }).Ls()
+		formulas.Filter(
+			func(item formula.Formula) bool {
+				return !item.Pinned
+			}).
+			Ls()
 	}
 }

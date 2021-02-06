@@ -34,10 +34,18 @@ func List(formulas formula.Formulas, args []string) {
 		}
 	} else {
 		// List installed bottles
-		formulas.Filter(func(item formula.Formula) bool { return item.Status != formula.MISSING }).Ls()
+		formulas.Filter(
+			func(item formula.Formula) bool {
+				return item.Status != formula.MISSING
+			}).
+			Ls()
 	}
 }
 
 func Outdated(formulas formula.Formulas, args []string) {
-	formulas.Filter(func(item formula.Formula) bool { return item.Status == formula.OUTDATED }).Ls()
+	formulas.Filter(
+		func(item formula.Formula) bool {
+			return item.Status == formula.OUTDATED
+		}).
+		Ls()
 }

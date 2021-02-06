@@ -58,8 +58,10 @@ func Search(formulas formula.Formulas, args []string) {
 			// String search
 			matcher = StringMatcher(spec)
 		}
-		formulas.Filter(func(item formula.Formula) bool {
-			return matcher(getter(item))
-		}).Ls()
+		formulas.Filter(
+			func(item formula.Formula) bool {
+				return matcher(getter(item))
+			}).
+			Ls()
 	}
 }
