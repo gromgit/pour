@@ -88,6 +88,9 @@ func Link(pkgSubdir string) error {
 				return err
 			}
 			os.Remove(dest)
+			if err := os.MkdirAll(filepath.Dir(dest), 0775); err != nil {
+				return err
+			}
 			if err := os.Symlink(rel, dest); err != nil {
 				return err
 			}
