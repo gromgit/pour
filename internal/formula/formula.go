@@ -247,3 +247,68 @@ func (f Formula) AddUser(u string) Formula {
 	f.Users = append(f.Users, u)
 	return f
 }
+
+func updateUseMap(allf Formulas, useMap map[string]int, names []string) (map[string]int, []string) {
+	var nextRound []string
+	for _, n := range names {
+		if (allf)[n].Name != "" {
+			useMap[n] = 1
+			for _, d := range (allf)[n].Users {
+				if useMap[d] == 0 {
+					// New dependency
+					nextRound = append(nextRound, d)
+					useMap[d] = 1
+				}
+			}
+		}
+	}
+	return useMap, nextRound
+}
+
+func (allf Formulas) FindDeps(names []string, common bool) (result []string) {
+	depMap := make(map[string]int)
+	for _, n := range names {
+		if (allf)[n].Name != "" {
+			for _, d := range (allf)[n].Dependencies {
+				depMap[d] += 1
+			}
+		}
+	}
+	for n, c := range depMap {
+		if !common ||
+			(common && c > 1) {
+			// Intersection
+			result = append(result, n)
+		}
+	}
+	return
+}
+
+func (allf Formulas) FindUsers(names []string, recursive bool) (result []string) {
+	useMap := make(map[string]int)
+	var nextRound []string
+	useMap, nextRound = updateUseMap(allf, useMap, names)
+	if recursive {
+		for len(nextRound) > 0 {
+			useMap, nextRound = updateUseMap(allf, useMap, nextRound)
+		}
+	}
+	// Remove original names
+	for _, n := range names {
+		delete(useMap, n)
+	}
+	for n, _ := range useMap {
+		result = append(result, n)
+	}
+	return
+}
+
+func (allf Formulas) Subset(l []string) Formulas {
+	result := make(Formulas)
+	for _, i := range l {
+		if allf[i].Name != "" {
+			result[i] = allf[i]
+		}
+	}
+	return result
+}

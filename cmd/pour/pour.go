@@ -18,6 +18,8 @@ func help(args []string) {
   list, ls [<formula>...]
   outdated
   leaves
+  deps [--installed] [--common] <formula>...
+  uses [--installed] [--recursive] <formula>
   pin [<formula>...]
   search [--desc] [<text> | /<regex>/]
   shellenv
@@ -100,6 +102,10 @@ func main() {
 		err = cmd.Search(allf, os.Args[2:])
 	case "info":
 		err = cmd.Info(allf, os.Args[2:])
+	case "deps":
+		err = cmd.Deps(allf, os.Args[2:])
+	case "uses":
+		err = cmd.Uses(allf, os.Args[2:])
 	case "install":
 		err = cmd.Install(&allf, os.Args[2:])
 	case "link":

@@ -5,6 +5,7 @@ import (
 	"github.com/gromgit/pour/internal/formula"
 	"log"
 	"os"
+	"strings"
 	t "text/template"
 )
 
@@ -89,5 +90,66 @@ func Leaves(allf formula.Formulas, args []string) error {
 	allf.Filter(func(f formula.Formula) bool {
 		return f.Leaf
 	}).Ls()
+	return nil
+}
+
+func Deps(allf formula.Formulas, args []string) error {
+	installed := false
+	common := false
+	// Handle options
+SearchOptions:
+	for len(args) > 0 {
+		switch {
+		case strings.HasPrefix(args[0], "--inst"):
+			installed = true
+		case strings.HasPrefix(args[0], "--comm"):
+			common = true
+		default:
+			break SearchOptions
+		}
+		args = args[1:]
+	}
+	// Filter for installed?
+	if installed {
+		var newArgs []string
+		for _, n := range args {
+			if allf[n].Status != formula.MISSING {
+				newArgs = append(newArgs, n)
+			}
+		}
+		args = newArgs
+	}
+	if len(args) > 0 {
+		allf.Subset(allf.FindDeps(args, common)).Ls()
+	}
+	return nil
+}
+
+func Uses(allf formula.Formulas, args []string) error {
+	installed := false
+	recursive := false
+	// Handle options
+SearchOptions:
+	for len(args) > 0 {
+		switch {
+		case strings.HasPrefix(args[0], "--inst"):
+			installed = true
+		case strings.HasPrefix(args[0], "--recur"):
+			recursive = true
+		default:
+			break SearchOptions
+		}
+		args = args[1:]
+	}
+	if len(args) > 0 {
+		result := allf.Subset(allf.FindUsers(args, recursive))
+		// Filter for installed?
+		if installed {
+			result = result.Filter(func(f formula.Formula) bool {
+				return f.Status != formula.MISSING
+			})
+		}
+		result.Ls()
+	}
 	return nil
 }
