@@ -26,7 +26,7 @@ func help(args []string) {
 }
 
 func fatal(args ...interface{}) {
-	fmt.Fprintln(os.Stderr, "FATAL ERROR:", args)
+	cfg.Log("FATAL ERROR:", args)
 	os.Exit(1)
 }
 
