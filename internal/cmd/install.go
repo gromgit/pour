@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/gromgit/litebrew/internal/bottle"
 	"github.com/gromgit/litebrew/internal/formula"
 )
 
@@ -19,6 +20,9 @@ func Install(allf *formula.Formulas, args []string) (err error) {
 				fmt.Println("DEBUG: Upgrade", f.Name)
 			case formula.MISSING:
 				fmt.Println("DEBUG: Install", f.Name)
+				if err = bottle.Install(f); err != nil {
+					return
+				}
 			}
 		}
 	}
