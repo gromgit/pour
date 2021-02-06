@@ -244,3 +244,69 @@ const (
 	OUTDATED
 	MISSING
 )
+
+// Formula reports (mostly for "info" cmd)
+func (formulas Formulas) GetDepStr(depList []string) (result string) {
+	deps := make(Formulas)
+	for _, d := range depList {
+		f := formulas[d]
+		if f.Name != "" {
+			deps[d] = formulas[d]
+		}
+	}
+	if len(deps) > 0 {
+		result = deps.MkStrList().List()
+	}
+	return
+}
+
+func (f Formula) GetDepReport(all Formulas) (results map[string]string) {
+	results = make(map[string]string)
+	for k, v := range map[string][]string{
+		"Required":    f.Dependencies,
+		"Recommended": f.RecommendedDependencies,
+		"Optional":    f.OptionalDependencies,
+	} {
+		if len(v) > 0 {
+			results[k] = all.GetDepStr(v)
+		}
+	}
+	return
+}
+
+func (f Formula) getKegReason() (result string) {
+	if strings.Contains(f.Name, "@") {
+		result = "this is an alternate version of another formula"
+	} else {
+		result = fmt.Sprintf("%s provides an older %s", config.OS_NAME, f.Name)
+	}
+	return
+}
+
+func (f Formula) GetCaveatReport() (results map[string]string) {
+	results = make(map[string]string)
+	if f.Caveats != "" {
+		results["Specific"] = f.Caveats
+	}
+	if f.KegOnly {
+		results["KegReason"] = f.getKegReason()
+		// Let's see what needs to be highlighted
+		baseDir := filepath.Join(f.Bottle.Stable.Prefix, "opt", f.Name)
+		if _, err := os.Stat(filepath.Join(baseDir, "bin")); err == nil {
+			results["Path"] = "true"
+		}
+		if _, err := os.Stat(filepath.Join(baseDir, "lib")); err == nil {
+			results["Dev"] = "true"
+		}
+		if _, err := os.Stat(filepath.Join(baseDir, "lib/pkgconfig")); err == nil {
+			results["Pkgconfig"] = "true"
+		}
+	}
+	if len(results) > 0 {
+		// Fill in the fixed stuff
+		results["Name"] = f.Name
+		results["OS"] = config.OS_NAME
+		results["Prefix"] = f.Bottle.Stable.Prefix
+	}
+	return
+}
