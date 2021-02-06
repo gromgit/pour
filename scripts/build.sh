@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 basemod=$(grep ^module go.mod | cut -d\  -f2)
-specs=(linux_amd64 linux_386 darwin_amd64)
+specs=(linux_amd64 darwin_amd64)
 
 build_all() {
   for spec in "${specs[@]}"; do
