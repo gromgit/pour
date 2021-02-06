@@ -38,6 +38,7 @@ func (allf *Formulas) Load(json_path string) error {
 				i.InstallDir = targetDir
 				i.InstallTime = stat.ModTime().Format("2006-01-02 at 15:04:05")
 				i.Pinned = isPinned(i.Name, stat)
+				i.Leaf = isLeaf(i.Name, stat)
 				instcount++
 			} else if _, err := os.Stat(targetParent); err == nil {
 				// Let's find the latest bottle installed here
@@ -48,6 +49,7 @@ func (allf *Formulas) Load(json_path string) error {
 						i.InstallDir = bottles[0]
 						i.InstallTime = stat.ModTime().Format("2006-01-02 at 15:04:05")
 						i.Pinned = isPinned(i.Name, stat)
+						i.Leaf = isLeaf(i.Name, stat)
 						instcount++
 					}
 				}
@@ -67,6 +69,14 @@ func (allf *Formulas) Load(json_path string) error {
 func isPinned(name string, stat os.FileInfo) (result bool) {
 	if _, err := os.Stat(filepath.Join(config.PINDIR, name)); err == nil {
 		// Homebrew pinning: link in PREFIX/var/homebrew/pinned/
+		result = true
+	}
+	return
+}
+
+func isLeaf(name string, stat os.FileInfo) (result bool) {
+	if _, err := os.Stat(filepath.Join(config.LEAFDIR, name)); err == nil {
+		// Homebrew pinning: link in PREFIX/var/homebrew/leaves/
 		result = true
 	}
 	return

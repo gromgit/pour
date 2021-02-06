@@ -24,6 +24,7 @@ var VAR_PATH string
 var JSON_PATH string
 var PINDIR string
 var LINKDIR string
+var LEAFDIR string
 var BOTTLEDIR string
 var TEMPDIR string
 var SYSDIRS []string
@@ -51,6 +52,10 @@ func LinkDir() string {
 	return VarDir() + "/linked"
 }
 
+func LeafDir() string {
+	return VarDir() + "/leaves"
+}
+
 func BottleDir() string {
 	return VarDir() + "/bottles"
 }
@@ -64,7 +69,7 @@ func Json() string {
 }
 
 func SysDirs() []string {
-	return []string{CELLAR, PINDIR, LINKDIR, BOTTLEDIR, TEMPDIR}
+	return []string{CELLAR, PINDIR, LINKDIR, LEAFDIR, BOTTLEDIR, TEMPDIR}
 }
 
 func Log(v ...interface{}) {
@@ -82,6 +87,7 @@ func init() {
 	JSON_PATH = Json()
 	PINDIR = PinDir()
 	LINKDIR = LinkDir()
+	LEAFDIR = LeafDir()
 	BOTTLEDIR = BottleDir()
 	TEMPDIR = TempDir()
 	SYSDIRS = SysDirs()

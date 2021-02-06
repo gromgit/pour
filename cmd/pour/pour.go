@@ -17,6 +17,7 @@ func help(args []string) {
   link <formula>...
   list, ls [<formula>...]
   outdated
+  leaves
   pin [<formula>...]
   search [--desc] [<text> | /<regex>/]
   shellenv
@@ -117,6 +118,8 @@ func main() {
 		err = cmd.List(allf, os.Args[2:])
 	case "outdated":
 		err = cmd.Outdated(allf, os.Args[2:])
+	case "leaves":
+		err = cmd.Leaves(allf, os.Args[2:])
 	default:
 		err = fmt.Errorf("Unknown subcommand '%s'", os.Args[1])
 	}

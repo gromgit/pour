@@ -84,3 +84,10 @@ func Info(allf formula.Formulas, args []string) error {
 	}
 	return nil
 }
+
+func Leaves(allf formula.Formulas, args []string) error {
+	allf.Filter(func(f formula.Formula) bool {
+		return f.Leaf
+	}).Ls()
+	return nil
+}
