@@ -76,6 +76,10 @@ func Log(v ...interface{}) {
 	logger.Println(v)
 }
 
+func Logf(s string, v ...interface{}) {
+	logger.Printf(s, v)
+}
+
 func init() {
 	// Check for POUR_PREFIX env var
 	if prefix := os.Getenv("POUR_PREFIX"); prefix != "" {
