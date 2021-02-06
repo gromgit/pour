@@ -136,10 +136,7 @@ func (formulas *Formulas) Load(json_path string) error {
 }
 
 func isPinned(name string, stat os.FileInfo) (result bool) {
-	if stat.Mode()&os.ModeSticky > 0 {
-		// Litebrew pinning: sticky bit on install dir
-		result = true
-	} else if _, err := os.Stat(config.DEFAULT_PREFIX + "/var/homebrew/pinned/" + name); err == nil {
+	if _, err := os.Stat(filepath.Join(config.PINDIR, name)); err == nil {
 		// Homebrew pinning: link in PREFIX/var/homebrew/pinned/
 		result = true
 	}
