@@ -31,22 +31,23 @@ func (allf *Formulas) Load(json_path string) error {
 		if !i.BottleDisabled && i.Installable() && i.Versions.Bottle {
 			i.Status = MISSING
 			// Check if installed
-			targetParent := filepath.Join(i.GetCellar(), i.Name)
-			targetDir := filepath.Join(targetParent, i.GetVersion())
-			if stat, err := os.Stat(targetDir); err == nil {
-				i.Status = INSTALLED
-				i.InstallDir = targetDir
-				i.InstallTime = stat.ModTime().Format("2006-01-02 at 15:04:05")
-				i.Pinned = isPinned(i.Name, stat)
-				i.Leaf = isLeaf(i.Name, stat)
-				instcount++
-			} else if _, err := os.Stat(targetParent); err == nil {
-				// Let's find the latest bottle installed here
-				if bottles, err := filepath.Glob(filepath.Join(targetParent, "*")); err == nil && len(bottles) > 0 {
-					// TODO: Find a better choice than the first one
-					if stat, err := os.Stat(bottles[0]); err == nil {
+			optLink := filepath.Join(config.OPTDIR, i.Name)
+			if stat, err := os.Stat(optLink); err == nil {
+				// Some version is installed, but which one?
+				instPath, err := filepath.EvalSymlinks(optLink)
+				if err == nil {
+					instVer := filepath.Base(instPath)
+					if instVer == i.GetVersion() {
+						// Latest-n-greatest
+						i.Status = INSTALLED
+						i.InstallDir = instPath
+						i.InstallTime = stat.ModTime().Format("2006-01-02 at 15:04:05")
+						i.Pinned = isPinned(i.Name, stat)
+						i.Leaf = isLeaf(i.Name, stat)
+						instcount++
+					} else {
 						i.Status = OUTDATED
-						i.InstallDir = bottles[0]
+						i.InstallDir = instPath
 						i.InstallTime = stat.ModTime().Format("2006-01-02 at 15:04:05")
 						i.Pinned = isPinned(i.Name, stat)
 						i.Leaf = isLeaf(i.Name, stat)
