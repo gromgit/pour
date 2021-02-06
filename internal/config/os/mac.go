@@ -9,11 +9,8 @@ import (
 
 const JSON_URL = "https://formulae.brew.sh/api/formula.json"
 const DEFAULT_PREFIX = "/usr/local"
-const DEFAULT_CELLAR = DEFAULT_PREFIX + "/Cellar"
 
-var OS_FIELD = getOS()
-
-func getOS() (os string) {
+func GetOS() (os string) {
 	verCmd := exec.Command("defaults", "read", "loginwindow", "SystemVersionStampAsString")
 	if verOut, err := verCmd.Output(); err != nil {
 		panic(err)
