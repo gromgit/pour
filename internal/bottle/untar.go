@@ -115,6 +115,12 @@ func untar(r io.Reader, dir string) (err error) {
 				return err
 			}
 			madeDir[abs] = true
+		case mode&os.ModeSymlink > 0:
+			// Get the symlink destination
+			if err := os.Symlink(f.Linkname, abs); err != nil {
+				log.Printf("error creating symlink %s -> %s: %v", abs, f.Linkname, err)
+				return err
+			}
 		default:
 			return fmt.Errorf("tar file entry %s contained unsupported file type %v", f.Name, mode)
 		}
