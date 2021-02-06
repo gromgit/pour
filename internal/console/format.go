@@ -12,7 +12,14 @@ type FancyString struct {
 	Content, Fmt string
 }
 
-func PlainColumn(strs []FancyString) string {
+// FancyString slice support routines
+type FancyStrSlice []FancyString
+
+func (a FancyStrSlice) Len() int           { return len(a) }
+func (a FancyStrSlice) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a FancyStrSlice) Less(i, j int) bool { return a[i].Content < a[j].Content }
+
+func PlainColumn(strs FancyStrSlice) string {
 	result := ""
 	for _, s := range strs {
 		result = result + s.Content + "\n"
@@ -24,7 +31,7 @@ func (s FancyString) Print(strfmt string) string {
 	return fmt.Sprintf("%s"+strfmt+"%s", s.Fmt, s.Content, Reset())
 }
 
-func Columnate(strs []FancyString) string {
+func Columnate(strs FancyStrSlice) string {
 	nstrs := len(strs)
 	result := ""
 	if nstrs > 0 {
