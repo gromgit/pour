@@ -30,6 +30,16 @@ func fatal(args ...interface{}) {
 	os.Exit(1)
 }
 
+func baseChecks() {
+	// Check for basic writability in DEFAULT_PREFIX
+	if _, err := os.Stat(config.DEFAULT_PREFIX); os.IsNotExist(err) {
+		fatal("Litebrew base dir", config.DEFAULT_PREFIX, "doesn't exist")
+	// Create VAR_PATH hierarchy if needed
+	} else if err = os.MkdirAll(config.VAR_PATH, 0775); err != nil {
+		fatal("Can't create", config.VAR_PATH, ":", err)
+	}
+}
+
 func doMeta(json_path string, args []string) (rtn int, quit bool) {
 	rtn = 0
 	quit = true
@@ -56,6 +66,7 @@ func doMeta(json_path string, args []string) (rtn int, quit bool) {
 }
 
 func main() {
+	baseChecks()
 	json_path := config.JSON_PATH
 	if rtn, quit := doMeta(json_path, os.Args); quit {
 		os.Exit(rtn)
