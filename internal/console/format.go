@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gromgit/litebrew/internal/config"
 	"os"
+	"strings"
 	"unicode/utf8"
 )
 
@@ -24,6 +25,14 @@ func PlainColumn(strs FancyStrSlice) string {
 		result = result + s.Content + "\n"
 	}
 	return result
+}
+
+func (strs FancyStrSlice) List() string {
+	var results []string
+	for _, s := range strs {
+		results = append(results, s.Print("%s"))
+	}
+	return strings.Join(results, ", ")
 }
 
 func (s FancyString) Print(strfmt string) string {
