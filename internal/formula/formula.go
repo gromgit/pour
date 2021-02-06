@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -107,11 +108,11 @@ type Formula struct {
 	*/
 }
 
-type Formulas []Formula
+type Formulas map[string]Formula
 
 func (formulas *Formulas) Load(json_path string) error {
 	// Parse the formulas JSON
-	var result Formulas
+	var result []Formula
 	if f, err := os.Open(json_path); err != nil {
 		return err
 	} else if fbytes, err := ioutil.ReadAll(f); err != nil {
@@ -121,6 +122,7 @@ func (formulas *Formulas) Load(json_path string) error {
 	}
 	// Post-process the results
 	var instcount = 0
+	*formulas = make(Formulas)
 	for _, i := range result {
 		if i.Versions.Bottle {
 			var fpath = filepath.Join(i.GetCellar(), i.Name, i.GetVersion())
@@ -128,7 +130,7 @@ func (formulas *Formulas) Load(json_path string) error {
 				i.Installed = true
 				instcount++
 			}
-			*formulas = append(*formulas, i)
+			(*formulas)[i.Name] = i
 		}
 	}
 	fmt.Fprintf(os.Stderr, "FORMULAS: Total = %d, Bottled = %d, Installed = %d\n", len(result), len(*formulas), instcount)
@@ -136,10 +138,10 @@ func (formulas *Formulas) Load(json_path string) error {
 }
 
 func (formulas Formulas) Filter(fn func(item Formula) bool) Formulas {
-	result := make(Formulas, 0)
+	result := make(Formulas)
 	for _, i := range formulas {
 		if fn(i) {
-			result = append(result, i)
+			result[i.Name] = i
 		}
 	}
 	return result
@@ -155,6 +157,7 @@ func (formulas Formulas) Ls() {
 			flist = append(flist, console.FancyString{i.Name, ""})
 		}
 	}
+	sort.Sort(console.FancyStrSlice(flist))
 	fmt.Print(console.Columnate(flist))
 }
 
