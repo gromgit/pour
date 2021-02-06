@@ -11,18 +11,18 @@ import (
 var formulas formula.Formulas
 
 func help(args []string) {
-	fmt.Println(`LITEBREW SUBCOMMANDS:
-  search [--desc] [<text> | /<regex>/]
+	fmt.Println(`Available subcommands:
   info [<formula>...]
   install <formula>...
+  list, ls [<formula>...]
+  outdated
   pin [<formula>...]
+  search [--desc] [<text> | /<regex>/]
+  shellenv
+  uninstall, remove, rm <formula>...
   unpin [<formula>...]
   update, up
-  outdated
-  upgrade [<formula>...]
-  uninstall, remove, rm <formula>...
-  list, ls [<formula>...]
-  shellenv`)
+  upgrade [<formula>...]`)
 }
 
 func doMeta(json_path string, args []string) (rtn int, quit bool) {
