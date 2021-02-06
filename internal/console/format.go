@@ -2,9 +2,8 @@ package console
 
 import (
 	"fmt"
-	"github.com/mattn/go-isatty"
+	"github.com/gromgit/litebrew/internal/config"
 	"os"
-	"strconv"
 	"unicode/utf8"
 )
 
@@ -35,12 +34,7 @@ func Columnate(strs FancyStrSlice) string {
 	nstrs := len(strs)
 	result := ""
 	if nstrs > 0 {
-		if isatty.IsTerminal(os.Stdin.Fd()) {
-			// Now find the screen width
-			screenwidth, err := strconv.Atoi(os.Getenv("COLUMNS"))
-			if err != nil || screenwidth == 0 {
-				screenwidth = 80 // A decent default
-			}
+		if config.Fancy {
 			// First find the longest width
 			maxwidth := 0
 			for _, s := range strs {
@@ -51,9 +45,14 @@ func Columnate(strs FancyStrSlice) string {
 			}
 			maxwidth += 2 // Add two spaces to each column
 			strfmt := fmt.Sprintf("%%-%ds", maxwidth)
-			cols := screenwidth / maxwidth
+			var cols int
+			if maxwidth > config.ScreenWidth {
+				cols = 1
+			} else {
+				cols = config.ScreenWidth / maxwidth
+			}
 			stride := nstrs / cols
-			fmt.Fprintf(os.Stderr, "Fmt: %q  Screen: (%d,%d)  Cols: %d  Stride: %d\n", strfmt, 0, screenwidth, cols, stride)
+			fmt.Fprintf(os.Stderr, "Fmt: %q  Screen: (%d,%d)  Cols: %d  Stride: %d\n", strfmt, 0, config.ScreenWidth, cols, stride)
 			// Let's run through the elements
 			if stride == 0 {
 				// Single row, so just walk through strs

@@ -137,6 +137,15 @@ func (formulas *Formulas) Load(json_path string) error {
 	return nil
 }
 
+func (formula Formula) Out() (out string) {
+	out = formula.Name
+	if config.Fancy && formula.Installed {
+		// Add installed checkmark
+		out = out + " ✓"
+	}
+	return
+}
+
 func (formulas Formulas) Filter(fn func(item Formula) bool) Formulas {
 	result := make(Formulas)
 	for _, i := range formulas {
@@ -152,9 +161,9 @@ func (formulas Formulas) Ls() {
 	bold := console.Set(console.BOLD_ON)
 	for _, i := range formulas {
 		if i.Installed {
-			flist = append(flist, console.FancyString{i.Name + " ✓", bold})
+			flist = append(flist, console.FancyString{i.Out(), bold})
 		} else {
-			flist = append(flist, console.FancyString{i.Name, ""})
+			flist = append(flist, console.FancyString{i.Out(), ""})
 		}
 	}
 	sort.Sort(console.FancyStrSlice(flist))
