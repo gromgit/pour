@@ -9,6 +9,7 @@ import (
 	"archive/tar"
 	"compress/gzip"
 	"fmt"
+	"github.com/h2non/filetype"
 	"io"
 	"log"
 	"os"
@@ -26,6 +27,18 @@ import (
 // Untar reads the gzip-compressed tar file from r and writes it into dir.
 func Untar(r io.Reader, dir string) error {
 	return untar(r, dir)
+}
+
+func GetTypeFromPath(path string) (string, error) {
+	if _, err := os.Stat(path); err != nil {
+		return "", err
+	}
+	ft, err := filetype.MatchFile(path)
+	if err != nil {
+		return "", err
+	} else {
+		return ft.MIME.Value, nil
+	}
 }
 
 func untar(r io.Reader, dir string) (err error) {
