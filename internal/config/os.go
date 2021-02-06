@@ -18,6 +18,7 @@ var OS_FIELD = oscfg.GetOS()
 var OS_DEPS = oscfg.GetDeps()
 
 var CELLAR string
+var OPTDIR string
 var VAR_PATH string
 var JSON_PATH string
 var PINDIR string
@@ -31,6 +32,10 @@ var logger = log.New(os.Stderr, "pour", log.LstdFlags)
 
 func Cellar() string {
 	return PREFIX + "/Cellar"
+}
+
+func OptDir() string {
+	return PREFIX + "/opt"
 }
 
 func VarDir() string {
@@ -71,6 +76,7 @@ func init() {
 		PREFIX = prefix
 	}
 	CELLAR = Cellar()
+	OPTDIR = OptDir()
 	VAR_PATH = VarDir()
 	JSON_PATH = Json()
 	PINDIR = PinDir()
