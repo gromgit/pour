@@ -39,7 +39,7 @@ func Shellenv(args []string) (err error) {
 	if template == nil {
 		err = errors.New("Unsupported shell " + shell)
 	} else {
-		err = template.Execute(os.Stdout, config.DEFAULT_PREFIX)
+		err = template.Execute(os.Stdout, config.PREFIX)
 	}
 	return
 }

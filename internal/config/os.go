@@ -10,20 +10,71 @@ import (
 const OS_NAME = oscfg.OS_NAME
 const DEFAULT_PREFIX = oscfg.DEFAULT_PREFIX
 const JSON_URL = oscfg.JSON_URL
-const CELLAR = DEFAULT_PREFIX + "/Cellar"
-const VAR_PATH = DEFAULT_PREFIX + "/var/pour"
-const JSON_PATH = VAR_PATH + "/bottles.json"
-const PINDIR = VAR_PATH + "/pinned"
-const LINKDIR = VAR_PATH + "/linked"
-const BOTTLEDIR = VAR_PATH + "/bottles"
-const TEMPDIR = VAR_PATH + "/tmp"
+const VAR_SUBPATH = "/var/pour"
+const DEFAULT_VAR_PATH = DEFAULT_PREFIX + VAR_SUBPATH
 
-var SYSDIRS = []string{CELLAR, PINDIR, LINKDIR, BOTTLEDIR, TEMPDIR}
+var PREFIX = DEFAULT_PREFIX
 var OS_FIELD = oscfg.GetOS()
+
+var CELLAR string
+var VAR_PATH string
+var JSON_PATH string
+var PINDIR string
+var LINKDIR string
+var BOTTLEDIR string
+var TEMPDIR string
+var SYSDIRS []string
 
 // Private logger instance
 var logger = log.New(os.Stderr, "pour", log.LstdFlags)
 
+func Cellar() string {
+	return PREFIX + "/Cellar"
+}
+
+func VarDir() string {
+	return PREFIX + VAR_SUBPATH
+}
+
+func PinDir() string {
+	return VarDir() + "/pinned"
+}
+
+func LinkDir() string {
+	return VarDir() + "/linked"
+}
+
+func BottleDir() string {
+	return VarDir() + "/bottles"
+}
+
+func TempDir() string {
+	return VarDir() + "/tmp"
+}
+
+func Json() string {
+	return VarDir() + "/bottles.json"
+}
+
+func SysDirs() []string {
+	return []string{CELLAR, PINDIR, LINKDIR, BOTTLEDIR, TEMPDIR}
+}
+
 func Log(v ...interface{}) {
 	logger.Println(v)
+}
+
+func init() {
+	// Check for POUR_PREFIX env var
+	if prefix := os.Getenv("POUR_PREFIX"); prefix != "" {
+		PREFIX = prefix
+	}
+	CELLAR = Cellar()
+	VAR_PATH = VarDir()
+	JSON_PATH = Json()
+	PINDIR = PinDir()
+	LINKDIR = LinkDir()
+	BOTTLEDIR = BottleDir()
+	TEMPDIR = TempDir()
+	SYSDIRS = SysDirs()
 }

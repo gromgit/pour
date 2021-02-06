@@ -31,9 +31,9 @@ func fatal(args ...interface{}) {
 }
 
 func baseChecks() {
-	// Check for basic writability in DEFAULT_PREFIX
-	if _, err := os.Stat(cfg.DEFAULT_PREFIX); os.IsNotExist(err) {
-		fatal("Pour base dir", cfg.DEFAULT_PREFIX, "doesn't exist")
+	// Check for basic writability in PREFIX
+	if _, err := os.Stat(cfg.PREFIX); os.IsNotExist(err) {
+		fatal("Pour base dir", cfg.PREFIX, "doesn't exist")
 	} else {
 		failedDirs := []string{}
 		for _, d := range cfg.SYSDIRS {
