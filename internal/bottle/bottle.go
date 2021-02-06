@@ -98,12 +98,8 @@ func Install(f formula.Formula, leaf bool) error {
 	url := f.Bottle.Stable.URL
 	tarName := filepath.Base(url)
 	tarPath := filepath.Join(cfg.BOTTLEDIR, tarName)
-	if _, err := os.Stat(tarPath); err != nil {
-		// Download it first
-		cfg.Log("Downloading", url)
-		if err := net.DownloadFile(tarPath, url); err != nil {
-			return err
-		}
+	if err := net.DownloadAndVerify(tarPath, url, f.Bottle.Stable.Sha256); err != nil {
+		return err
 	}
 	// Unpack into temp dir
 	if tempDir, err := ioutil.TempDir(cfg.TEMPDIR, "inst"); err != nil {
