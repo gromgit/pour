@@ -51,7 +51,9 @@ func doMeta(json_path string, args []string) (rtn int, quit bool) {
 		case "help", "-h", "--help":
 			help(os.Args[2:])
 		case "shellenv":
-			cmd.Shellenv(os.Args[2:])
+			if err := cmd.Shellenv(os.Args[2:]); err != nil {
+				fatal(err)
+			}
 		case "update", "up":
 			if err := cmd.Update(json_path); err != nil {
 				fatal("Unable to update local JSON:", err)
