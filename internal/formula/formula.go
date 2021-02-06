@@ -28,7 +28,7 @@ func (allf *Formulas) Load(json_path string) error {
 	var instcount = 0
 	*allf = make(Formulas)
 	for _, i := range result {
-		if !i.BottleDisabled && i.Versions.Bottle {
+		if !i.BottleDisabled && i.Installable() && i.Versions.Bottle {
 			i.Status = MISSING
 			// Check if installed
 			targetParent := filepath.Join(i.GetCellar(), i.Name)
@@ -138,7 +138,7 @@ func (allf Formulas) Ls() {
 
 func (formula Formula) GetCellar() string {
 	result := formula.Bottle.Stable.Cellar
-	if strings.HasPrefix(result, ":any") {
+	if formula.Installable() {
 		result = config.CELLAR
 	}
 	return result
@@ -150,6 +150,11 @@ func (formula Formula) GetVersion() string {
 		result = result + "_" + strconv.Itoa(formula.Revision)
 	}
 	return result
+}
+
+func (formula Formula) Installable() bool {
+	return strings.HasPrefix(formula.Bottle.Stable.Cellar, ":any") ||
+		formula.Bottle.Stable.Cellar == config.CELLAR
 }
 
 // Various formula-related enumerations
