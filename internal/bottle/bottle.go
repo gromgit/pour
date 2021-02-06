@@ -93,7 +93,7 @@ func Link(pkgSubdir string) error {
 	return nil
 }
 
-func Install(f formula.Formula) error {
+func Install(f formula.Formula, leaf bool) error {
 	log.SetOutput(os.Stdout)
 	url := f.Bottle.Stable.URL
 	tarName := filepath.Base(url)
@@ -128,6 +128,10 @@ func Install(f formula.Formula) error {
 		if err := os.Rename(tempPkgdir, finalPkgdir); err != nil {
 			return err
 		}
+		// Patch executables where necessary
+		if err := cfg.PatchExec(finalPkgdir, cfg.PREFIX); err != nil {
+			return err
+		}
 		// Unlink/remove old version if present
 		if f.InstallDir != "" {
 			oldPkgSubdir, err := filepath.Rel(cfg.CELLAR, f.InstallDir)
@@ -143,10 +147,20 @@ func Install(f formula.Formula) error {
 				f.Status = formula.MISSING
 			}
 		}
-		// Link new version in
-		if err := Link(pkgSubdir); err != nil {
-			return err
+		// Link new version in if not keg-only
+		if !f.KegOnly {
+			if err := Link(pkgSubdir); err != nil {
+				return err
+			}
 		}
+		// Always link to OPTDIR
+		linkOne(finalPkgdir, filepath.Join(cfg.OPTDIR, f.Name))
+		// Record leaf status
+		if leaf {
+			linkOne(finalPkgdir, filepath.Join(cfg.LEAFDIR, f.Name))
+		}
+		// Record the necessary details
+		f.InstallDir = finalPkgdir
 	}
 	return nil
 }
