@@ -143,6 +143,36 @@ func isPinned(name string, stat os.FileInfo) (result bool) {
 	return
 }
 
+func (formula Formula) Pin() (e error) {
+	if formula.Status == MISSING {
+		fmt.Fprintf(os.Stderr, "Bottle '%s' not installed, cannot pin\n", formula.Name)
+	} else if formula.Pinned {
+		fmt.Fprintf(os.Stderr, "Bottle '%s' already pinned\n", formula.Name)
+	} else {
+		// Link the current version
+		srcpath := formula.InstallDir
+		destpath := filepath.Join(config.PINDIR, formula.Name)
+		if err := os.Symlink(srcpath, destpath); err != nil {
+			e = err
+		}
+	}
+	return
+}
+
+func (formula Formula) Unpin() (e error) {
+	if formula.Status == MISSING {
+		fmt.Fprintf(os.Stderr, "Bottle '%s' not installed, cannot unpin\n", formula.Name)
+	} else if !formula.Pinned {
+		fmt.Fprintf(os.Stderr, "Bottle '%s' not pinned\n", formula.Name)
+	} else {
+		// Remove the existing link
+		if err := os.Remove(filepath.Join(config.PINDIR, formula.Name)); err != nil {
+			e = err
+		}
+	}
+	return
+}
+
 func (formula Formula) Out() (out string) {
 	out = formula.Name
 	if config.Fancy {

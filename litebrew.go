@@ -15,6 +15,8 @@ func help(args []string) {
   search [--desc] [<text> | /<regex>/]
   info [<formula>...]
   install <formula>...
+  pin <formula>...
+  unpin <formula>...
   update, up
   outdated [-q|--quiet] [-v|--verbose] [formula]
   upgrade [<formula>...]
@@ -68,6 +70,10 @@ func main() {
 		cmd.Info(formulas, os.Args[2:])
 	case "install":
 		cmd.Install(formulas, os.Args[2:])
+	case "pin":
+		cmd.Pin(formulas, os.Args[2:])
+	case "unpin":
+		cmd.Unpin(formulas, os.Args[2:])
 	case "upgrade":
 		cmd.Upgrade(formulas, os.Args[2:])
 	case "uninstall", "remove", "rm":
