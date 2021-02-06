@@ -5,9 +5,10 @@ import oscfg "github.com/gromgit/litebrew/internal/config/os"
 
 const DEFAULT_PREFIX = oscfg.DEFAULT_PREFIX
 const JSON_URL = oscfg.JSON_URL
-const JSON_PATH = DEFAULT_PREFIX + "/var/litebrew/bottles.json"
 const CELLAR = DEFAULT_PREFIX + "/Cellar"
-const PINDIR = DEFAULT_PREFIX + "/var/litebrew/pinned"
-const LINKDIR = DEFAULT_PREFIX + "/var/litebrew/linked"
+const VAR_PATH = DEFAULT_PREFIX + "/var/litebrew"
+const JSON_PATH = VAR_PATH + "/bottles.json"
+const PINDIR = VAR_PATH + "/pinned"
+const LINKDIR = VAR_PATH + "/linked"
 
 var OS_FIELD = oscfg.GetOS()
