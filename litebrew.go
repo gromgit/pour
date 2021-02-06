@@ -49,13 +49,7 @@ func doMeta(json_path string, args []string) (rtn int, quit bool) {
 }
 
 func main() {
-	json_path := os.Getenv("LITEBREW_PREFIX")
-	if json_path == "" {
-		json_path = config.DEFAULT_PREFIX
-		fmt.Fprintf(os.Stderr, "LITEBREW_PREFIX not set, using %s\n", json_path)
-	}
-	json_path += "/Lite/formula.json"
-
+	json_path := config.JSON_PATH
 	if rtn, quit := doMeta(json_path, os.Args); quit {
 		os.Exit(rtn)
 	}
