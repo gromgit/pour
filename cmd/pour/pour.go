@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/gromgit/litebrew/internal/cmd"
-	cfg "github.com/gromgit/litebrew/internal/config"
-	"github.com/gromgit/litebrew/internal/formula"
+	"github.com/gromgit/pour/internal/cmd"
+	cfg "github.com/gromgit/pour/internal/config"
+	"github.com/gromgit/pour/internal/formula"
 	"os"
 )
 
@@ -33,7 +33,7 @@ func fatal(args ...interface{}) {
 func baseChecks() {
 	// Check for basic writability in DEFAULT_PREFIX
 	if _, err := os.Stat(cfg.DEFAULT_PREFIX); os.IsNotExist(err) {
-		fatal("Litebrew base dir", cfg.DEFAULT_PREFIX, "doesn't exist")
+		fatal("Pour base dir", cfg.DEFAULT_PREFIX, "doesn't exist")
 	} else {
 		failedDirs := []string{}
 		for _, d := range cfg.SYSDIRS {

@@ -3,8 +3,8 @@ package formula
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gromgit/litebrew/internal/config"
-	"github.com/gromgit/litebrew/internal/console"
+	"github.com/gromgit/pour/internal/config"
+	"github.com/gromgit/pour/internal/console"
 	"io/ioutil"
 	"os"
 	"path/filepath"

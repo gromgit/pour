@@ -2,13 +2,13 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/gromgit/litebrew/internal/formula"
+	"github.com/gromgit/pour/internal/formula"
 	"os"
 	"regexp"
 	"strings"
 )
 
-// litebrew search [TEXT|/REGEX/]
+// pour search [TEXT|/REGEX/]
 func StringMatcher(m string) func(s string) bool {
 	return func(s string) bool {
 		return strings.Index(s, m) >= 0

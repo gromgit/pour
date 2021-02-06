@@ -1,4 +1,4 @@
-module github.com/gromgit/litebrew
+module github.com/gromgit/pour
 
 go 1.13
 

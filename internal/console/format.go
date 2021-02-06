@@ -2,7 +2,7 @@ package console
 
 import (
 	"fmt"
-	"github.com/gromgit/litebrew/internal/config"
+	"github.com/gromgit/pour/internal/config"
 	"os"
 	"strings"
 	"unicode/utf8"

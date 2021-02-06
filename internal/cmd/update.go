@@ -3,8 +3,8 @@ package cmd
 import (
 	"errors"
 	"fmt"
-	"github.com/gromgit/litebrew/internal/config"
-	"github.com/gromgit/litebrew/internal/net"
+	"github.com/gromgit/pour/internal/config"
+	"github.com/gromgit/pour/internal/net"
 	"os"
 	"path/filepath"
 )

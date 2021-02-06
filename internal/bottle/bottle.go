@@ -2,9 +2,9 @@ package bottle
 
 import (
 	"bufio"
-	cfg "github.com/gromgit/litebrew/internal/config"
-	"github.com/gromgit/litebrew/internal/formula"
-	"github.com/gromgit/litebrew/internal/net"
+	cfg "github.com/gromgit/pour/internal/config"
+	"github.com/gromgit/pour/internal/formula"
+	"github.com/gromgit/pour/internal/net"
 	"io/ioutil"
 	"log"
 	"os"

@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"github.com/gromgit/litebrew/internal/console"
-	"github.com/gromgit/litebrew/internal/formula"
+	"github.com/gromgit/pour/internal/console"
+	"github.com/gromgit/pour/internal/formula"
 	"log"
 	"os"
 	t "text/template"

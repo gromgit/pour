@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/gromgit/litebrew/internal/bottle"
-	"github.com/gromgit/litebrew/internal/formula"
+	"github.com/gromgit/pour/internal/bottle"
+	"github.com/gromgit/pour/internal/formula"
 )
 
 func Install(allf *formula.Formulas, args []string) (err error) {
