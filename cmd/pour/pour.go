@@ -5,6 +5,7 @@ import (
 	"github.com/gromgit/pour/internal/cmd"
 	cfg "github.com/gromgit/pour/internal/config"
 	"github.com/gromgit/pour/internal/formula"
+	"github.com/gromgit/pour/internal/log"
 	"os"
 )
 
@@ -31,7 +32,7 @@ func help(args []string) {
 }
 
 func fatal(args ...interface{}) {
-	cfg.Log("FATAL ERROR:", args)
+	fmt.Fprintf(os.Stderr, "FATAL ERROR: %+v", args)
 	os.Exit(1)
 }
 

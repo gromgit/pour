@@ -3,7 +3,6 @@ package config
 // Import the OS-specific stuff
 import (
 	oscfg "github.com/gromgit/pour/internal/config/os"
-	"log"
 	"os"
 )
 
@@ -28,9 +27,6 @@ var LEAFDIR string
 var BOTTLEDIR string
 var TEMPDIR string
 var SYSDIRS []string
-
-// Private logger instance
-var logger = log.New(os.Stderr, "pour", log.LstdFlags)
 
 func Cellar() string {
 	return PREFIX + "/Cellar"
@@ -70,14 +66,6 @@ func Json() string {
 
 func SysDirs() []string {
 	return []string{CELLAR, PINDIR, LINKDIR, LEAFDIR, BOTTLEDIR, TEMPDIR}
-}
-
-func Log(v ...interface{}) {
-	logger.Println(v...)
-}
-
-func Logf(s string, v ...interface{}) {
-	logger.Printf(s, v...)
 }
 
 func init() {

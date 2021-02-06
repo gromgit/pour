@@ -11,8 +11,8 @@ import (
 	"compress/gzip"
 	"fmt"
 	"github.com/gromgit/pour/internal/file"
+	"github.com/gromgit/pour/internal/log"
 	"io"
-	"log"
 	"os"
 	"path"
 	"path/filepath"
@@ -58,9 +58,9 @@ func untar(r io.Reader, dir string) (err error) {
 	defer func() {
 		td := time.Since(t0)
 		if err == nil {
-			log.Printf("extracted tarball into %s: %d files, %d dirs (%v)", dir, nFiles, len(madeDir), td)
+			log.Logf("extracted tarball into %s: %d files, %d dirs (%v)", dir, nFiles, len(madeDir), td)
 		} else {
-			log.Printf("error extracting tarball into %s after %d files, %d dirs, %v: %v", dir, nFiles, len(madeDir), td, err)
+			log.Logf("error extracting tarball into %s after %d files, %d dirs, %v: %v", dir, nFiles, len(madeDir), td, err)
 		}
 	}()
 	tr := tar.NewReader(r)
@@ -71,7 +71,7 @@ func untar(r io.Reader, dir string) (err error) {
 			break
 		}
 		if err != nil {
-			log.Printf("tar reading error: %v", err)
+			log.Logf("tar reading error: %v", err)
 			return fmt.Errorf("tar error: %v", err)
 		}
 		if !validRelPath(f.Name) {
@@ -124,7 +124,7 @@ func untar(r io.Reader, dir string) (err error) {
 					// on it anywhere (the gomote push command relies
 					// on digests only), so this is a little pointless
 					// for now.
-					log.Printf("error changing modtime: %v (further Chtimes errors suppressed)", err)
+					log.Logf("error changing modtime: %v (further Chtimes errors suppressed)", err)
 					loggedChtimesError = true // once is enough
 				}
 			}
@@ -137,7 +137,7 @@ func untar(r io.Reader, dir string) (err error) {
 		case mode&os.ModeSymlink > 0:
 			// Get the symlink destination
 			if err := os.Symlink(f.Linkname, abs); err != nil {
-				log.Printf("error creating symlink %s -> %s: %v", abs, f.Linkname, err)
+				log.Logf("error creating symlink %s -> %s: %v", abs, f.Linkname, err)
 				return err
 			}
 		default:

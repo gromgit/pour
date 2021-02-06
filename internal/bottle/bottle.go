@@ -3,9 +3,9 @@ package bottle
 import (
 	cfg "github.com/gromgit/pour/internal/config"
 	"github.com/gromgit/pour/internal/formula"
+	"github.com/gromgit/pour/internal/log"
 	"github.com/gromgit/pour/internal/net"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 )
@@ -18,9 +18,9 @@ func getFilelist(list *[]string) func(path string, info os.FileInfo, err error) 
 		if info.IsDir() {
 			switch info.Name() {
 			case ".", "bin", "etc", "include", "lib", "man", "opt", "sbin", "share", "var":
-				log.Println("Linking dir", path)
+				log.Log("Linking dir", path)
 			default:
-				log.Println("Skipping", path)
+				log.Log("Skipping", path)
 				return filepath.SkipDir
 			}
 		} else if filepath.Dir(path) != "." {
@@ -62,11 +62,11 @@ func Unlink(pkgSubdir string) error {
 	if list, err := getLinkables(filepath.Join(cfg.CELLAR, pkgSubdir)); err != nil {
 		return err
 	} else {
-		cfg.Log("Unlink paths:", list)
+		log.Log("Unlink paths:", list)
 		for _, p := range list {
 			pf := filepath.Join(cfg.CELLAR, p)
 			if err := os.Remove(pf); err != nil {
-				cfg.Log("ERROR on unlink", pf, err)
+				log.Log("ERROR on unlink", pf, err)
 			}
 		}
 	}
@@ -81,7 +81,7 @@ func Link(pkgSubdir string) error {
 		return err
 	} else {
 		pkgName := filepath.Dir(pkgSubdir)
-		cfg.Log("Link paths:", list)
+		log.Log("Link paths:", list)
 		for _, p := range list {
 			dest := filepath.Join(cfg.PREFIX, p)
 			src := filepath.Join(pkgDir, p)
@@ -94,7 +94,6 @@ func Link(pkgSubdir string) error {
 }
 
 func Install(f formula.Formula, leaf bool) error {
-	log.SetOutput(os.Stdout)
 	url := f.Bottle.Stable.URL
 	tarName := filepath.Base(url)
 	tarPath := filepath.Join(cfg.BOTTLEDIR, tarName)
@@ -109,7 +108,7 @@ func Install(f formula.Formula, leaf bool) error {
 		if err := Untar(tarPath, tempDir); err != nil {
 			return err
 		}
-		cfg.Log("Unpacked to", tempDir)
+		log.Log("Unpacked to", tempDir)
 		// Make sure we have the right dir
 		tempPkgdir := filepath.Join(tempDir, f.Name, f.GetVersion())
 		if _, err := os.Stat(tempPkgdir); err != nil {

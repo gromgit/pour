@@ -3,8 +3,8 @@
 package config
 
 import (
-	"fmt"
 	"github.com/gromgit/pour/internal/file"
+	"github.com/gromgit/pour/internal/log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -50,14 +50,14 @@ func patchIt(path, prefix string) error {
 	}
 	if len(patchArgs) > 0 {
 		patchArgs = append(patchArgs, path)
-		fmt.Println("Running patchelf", patchArgs)
+		log.Log("Running patchelf", patchArgs)
 		// First save existing perms
 		stat, err := os.Stat(path)
 		if err != nil {
 			return err
 		}
 		oldModes := stat.Mode()
-		fmt.Printf("Chmod: %o -> %o\n", oldModes, oldModes|0222)
+		log.Logf("Chmod: %o -> %o\n", oldModes, oldModes|0222)
 		// We want to be writable
 		if err := os.Chmod(path, oldModes|0222); err != nil {
 			return err

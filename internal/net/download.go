@@ -3,7 +3,7 @@ package net
 import (
 	"crypto/sha256"
 	"fmt"
-	cfg "github.com/gromgit/pour/internal/config"
+	"github.com/gromgit/pour/internal/log"
 	"io"
 	"net/http"
 	"os"
@@ -12,7 +12,7 @@ import (
 // Ref: https://golangcode.com/download-a-file-from-a-url/
 func DownloadFile(filepath string, url string) error {
 
-	cfg.Log("Downloading", url)
+	log.Log("Downloading", url)
 
 	// Get the data
 	resp, err := http.Get(url)
@@ -35,7 +35,7 @@ func DownloadFile(filepath string, url string) error {
 
 func ChecksumFile(filepath string, sha string) error {
 
-	cfg.Log("Verifying", filepath)
+	log.Log("Verifying", filepath)
 
 	f, err := os.Open(filepath)
 	if err != nil {

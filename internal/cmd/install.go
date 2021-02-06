@@ -5,6 +5,7 @@ import (
 	"github.com/gromgit/pour/internal/bottle"
 	cfg "github.com/gromgit/pour/internal/config"
 	"github.com/gromgit/pour/internal/formula"
+	"github.com/gromgit/pour/internal/log"
 	"path/filepath"
 	"strings"
 )
@@ -62,7 +63,7 @@ func Install(allf *formula.Formulas, args []string) (err error) {
 		}
 	}
 	// Do all the installations
-	cfg.Logf("instMap: %+v\n", instMap)
+	log.Logf("instMap: %+v\n", instMap)
 	for name, act := range instMap {
 		f := (*allf)[name]
 		if act&ACT_MASK != NOTHING {
