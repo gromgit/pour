@@ -1,7 +1,6 @@
 package bottle
 
 import (
-	"bufio"
 	cfg "github.com/gromgit/pour/internal/config"
 	"github.com/gromgit/pour/internal/formula"
 	"github.com/gromgit/pour/internal/net"
@@ -10,18 +9,6 @@ import (
 	"os"
 	"path/filepath"
 )
-
-func Unpack(tarPath, destPath string) error {
-	if f, err := os.Open(tarPath); err != nil {
-		return err
-	} else {
-		r := bufio.NewReader(f)
-		if err := Untar(r, destPath); err != nil {
-			return err
-		}
-	}
-	return nil
-}
 
 func getFilelist(list *[]string) func(path string, info os.FileInfo, err error) error {
 	return func(path string, info os.FileInfo, err error) error {
@@ -121,7 +108,7 @@ func Install(f formula.Formula) error {
 		return err
 	} else {
 		defer os.RemoveAll(tempDir)
-		if err := Unpack(tarPath, tempDir); err != nil {
+		if err := Untar(tarPath, tempDir); err != nil {
 			return err
 		}
 		cfg.Log("Unpacked to", tempDir)
