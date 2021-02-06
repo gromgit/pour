@@ -202,17 +202,20 @@ func (formulas Formulas) Filter(fn func(item Formula) bool) Formulas {
 	return result
 }
 
-func (formulas Formulas) Ls() {
-	var flist []console.FancyString
+func (formulas Formulas) MkStrList() (list console.FancyStrSlice) {
 	for _, i := range formulas {
 		if i.Status == INSTALLED {
-			flist = append(flist, console.FancyString{i.Out(), console.Bold})
+			list = append(list, console.FancyString{i.Out(), console.Bold})
 		} else {
-			flist = append(flist, console.FancyString{i.Out(), ""})
+			list = append(list, console.FancyString{i.Out(), ""})
 		}
 	}
-	sort.Sort(console.FancyStrSlice(flist))
-	fmt.Print(console.Columnate(flist))
+	sort.Sort(console.FancyStrSlice(list))
+	return
+}
+
+func (formulas Formulas) Ls() {
+	fmt.Print(formulas.MkStrList().Columnate())
 }
 
 func (formula Formula) GetCellar() string {
