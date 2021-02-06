@@ -70,16 +70,26 @@ func Install(allf *formula.Formulas, args []string) (err error) {
 			actions = append(actions, ActionPlan{name, act.Code&LEAF > 0})
 		}
 	}
+	caveats := make(map[string]string)
 	if len(errors) == 0 {
 		for _, a := range actions {
 			fmt.Println("---> Installing", a.Name)
 			if err = bottle.Install((*allf)[a.Name], a.Leaf); err != nil {
 				errors = append(errors, a.Name+": "+err.Error())
+			} else if (*allf)[a.Name].Caveats != "" {
+				c := (*allf)[a.Name].Caveats
+				fmt.Println("===> Caveats\n" + c)
+				caveats[a.Name] = c
 			}
 		}
 	}
 	if len(errors) > 0 {
 		fmt.Println("===> ERRORS\n" + strings.Join(errors, "\n"))
+	} else if len(caveats) > 0 {
+		fmt.Println("===> CAVEATS")
+		for k, v := range caveats {
+			fmt.Printf("---> %s\n%s\n", k, v)
+		}
 	}
 	return
 }
