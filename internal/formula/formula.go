@@ -180,7 +180,7 @@ func (formulas Formulas) Ls() {
 func (formula Formula) GetCellar() string {
 	result := formula.Bottle.Stable.Cellar
 	if strings.HasPrefix(result, ":any") {
-		result = config.DEFAULT_CELLAR
+		result = config.CELLAR
 	}
 	return result
 }
