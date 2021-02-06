@@ -57,15 +57,15 @@ func doMeta(json_path string, args []string) (rtn int, quit bool) {
 	rtn = 0
 	quit = true
 	// Check for subcommands
-	if len(os.Args) < 2 {
-		help(os.Args)
+	if len(args) < 1 {
+		help(args)
 		rtn = 1
 	} else {
-		switch os.Args[1] {
+		switch args[0] {
 		case "help", "-h", "--help":
-			help(os.Args[2:])
+			help(args[1:])
 		case "shellenv":
-			if err := cmd.Shellenv(os.Args[2:]); err != nil {
+			if err := cmd.Shellenv(args[1:]); err != nil {
 				fatal(err)
 			}
 		case "update", "up":
@@ -81,9 +81,27 @@ func doMeta(json_path string, args []string) (rtn int, quit bool) {
 }
 
 func main() {
+	// First check global options
+	args := os.Args[1:]
+GlobalOptions:
+	for len(args) > 0 {
+		switch args[0] {
+		case "--debug":
+			if f, err := os.Create(args[1]); err != nil {
+				fatal("Can't create debug file", err)
+			} else {
+				defer f.Close()
+				log.File(f)
+				args = args[1:]
+			}
+		default:
+			break GlobalOptions
+		}
+		args = args[1:]
+	}
 	baseChecks()
 	json_path := cfg.JSON_PATH
-	if rtn, quit := doMeta(json_path, os.Args); quit {
+	if rtn, quit := doMeta(json_path, args); quit {
 		os.Exit(rtn)
 	}
 
@@ -98,37 +116,37 @@ func main() {
 	}
 
 	var err error
-	switch os.Args[1] {
+	switch args[0] {
 	case "search":
-		err = cmd.Search(allf, os.Args[2:])
+		err = cmd.Search(allf, args[1:])
 	case "info":
-		err = cmd.Info(allf, os.Args[2:])
+		err = cmd.Info(allf, args[1:])
 	case "deps":
-		err = cmd.Deps(allf, os.Args[2:])
+		err = cmd.Deps(allf, args[1:])
 	case "uses":
-		err = cmd.Uses(allf, os.Args[2:])
+		err = cmd.Uses(allf, args[1:])
 	case "install":
-		err = cmd.Install(&allf, os.Args[2:])
+		err = cmd.Install(&allf, args[1:])
 	case "link":
-		err = cmd.Link(&allf, os.Args[2:])
+		err = cmd.Link(&allf, args[1:])
 	case "pin":
-		err = cmd.Pin(allf, os.Args[2:])
+		err = cmd.Pin(allf, args[1:])
 	case "unpin":
-		err = cmd.Unpin(allf, os.Args[2:])
+		err = cmd.Unpin(allf, args[1:])
 	case "upgrade":
-		err = cmd.Upgrade(allf, os.Args[2:])
+		err = cmd.Upgrade(allf, args[1:])
 	case "uninstall", "remove", "rm":
-		err = cmd.Uninstall(allf, os.Args[2:])
+		err = cmd.Uninstall(allf, args[1:])
 	case "unlink":
-		err = cmd.Unlink(&allf, os.Args[2:])
+		err = cmd.Unlink(&allf, args[1:])
 	case "list", "ls":
-		err = cmd.List(allf, os.Args[2:])
+		err = cmd.List(allf, args[1:])
 	case "outdated":
-		err = cmd.Outdated(allf, os.Args[2:])
+		err = cmd.Outdated(allf, args[1:])
 	case "leaves":
-		err = cmd.Leaves(allf, os.Args[2:])
+		err = cmd.Leaves(allf, args[1:])
 	default:
-		err = fmt.Errorf("Unknown subcommand '%s'", os.Args[1])
+		err = fmt.Errorf("Unknown subcommand '%s'", args[0])
 	}
 	if err != nil {
 		fatal(err)
