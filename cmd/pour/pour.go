@@ -32,7 +32,9 @@ func help(args []string) {
 }
 
 func fatal(args ...interface{}) {
-	fmt.Fprintf(os.Stderr, "FATAL ERROR: %+v", args)
+	if len(args) > 0 {
+		fmt.Fprintf(os.Stderr, "FATAL ERROR: %+v\n", args)
+	}
 	os.Exit(1)
 }
 
@@ -146,9 +148,10 @@ GlobalOptions:
 	case "leaves":
 		err = cmd.Leaves(allf, args[1:])
 	default:
-		err = fmt.Errorf("Unknown subcommand '%s'", args[0])
+		fatal(fmt.Errorf("Unknown subcommand '%s'", args[0]))
 	}
 	if err != nil {
-		fatal(err)
+		log.Spew(err)
+		fatal()
 	}
 }
