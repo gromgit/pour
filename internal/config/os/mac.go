@@ -7,6 +7,7 @@ import (
 	s "strings"
 )
 
+const OS_NAME = "macOS"
 const JSON_URL = "https://formulae.brew.sh/api/formula.json"
 const DEFAULT_PREFIX = "/usr/local"
 

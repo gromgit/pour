@@ -2,6 +2,7 @@
 
 package config
 
+const OS_NAME = "Linux"
 const JSON_URL = "https://formulae.brew.sh/api/formula-linux.json"
 const DEFAULT_PREFIX = "/home/linuxbrew/.linuxbrew"
 
