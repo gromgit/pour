@@ -39,17 +39,27 @@ func Search(allf formula.Formulas, args []string) error {
 	var matcher func(s string) bool
 	var getter func(item formula.Formula) string
 	fmt.Printf("Doing search %v\n", args)
+	getter = NameGetter
+	// Handle options
+SearchOptions:
+	for len(args) > 0 {
+		switch {
+		case strings.HasPrefix(args[0], "--desc"):
+			getter = DescGetter
+		case strings.HasPrefix(args[0], "--inst"):
+			// Filter out only the installed stuff
+			allf = allf.Filter(func(f formula.Formula) bool {
+				return f.Status == formula.INSTALLED
+			})
+		default:
+			break SearchOptions
+		}
+		args = args[1:]
+	}
 	if len(args) == 0 {
 		// Return all bottles
 		allf.Ls()
 	} else {
-		// Filter first
-		if strings.HasPrefix(args[0], "--desc") {
-			getter = DescGetter
-			args = args[1:]
-		} else {
-			getter = NameGetter
-		}
 		spec := args[0]
 		if spec[0] == '/' && spec[len(spec)-1] == '/' {
 			// Regex search
