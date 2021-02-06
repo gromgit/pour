@@ -3,7 +3,7 @@ package formula
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gromgit/pour/internal/config"
+	cfg "github.com/gromgit/pour/internal/config"
 	"github.com/gromgit/pour/internal/console"
 	"io/ioutil"
 	"os"
@@ -31,7 +31,7 @@ func (allf *Formulas) Load(json_path string) error {
 		if !i.BottleDisabled && i.Installable() && i.Versions.Bottle {
 			i.Status = MISSING
 			// Check if installed
-			optLink := filepath.Join(config.OPTDIR, i.Name)
+			optLink := filepath.Join(cfg.OPTDIR, i.Name)
 			if stat, err := os.Stat(optLink); err == nil {
 				// Some version is installed, but which one?
 				instPath, err := filepath.EvalSymlinks(optLink)
@@ -56,7 +56,7 @@ func (allf *Formulas) Load(json_path string) error {
 				}
 			}
 			// Look up proper URL / SHA256
-			baseVal := reflect.ValueOf(i.Bottle.Stable.Files).FieldByName(config.OS_FIELD)
+			baseVal := reflect.ValueOf(i.Bottle.Stable.Files).FieldByName(cfg.OS_FIELD)
 			i.Bottle.Stable.URL = baseVal.FieldByName("URL").String()
 			i.Bottle.Stable.Sha256 = baseVal.FieldByName("Sha256").String()
 			// Record it officially
@@ -76,7 +76,7 @@ func (allf *Formulas) Load(json_path string) error {
 }
 
 func isPinned(name string, stat os.FileInfo) (result bool) {
-	if _, err := os.Stat(filepath.Join(config.PINDIR, name)); err == nil {
+	if _, err := os.Stat(filepath.Join(cfg.PINDIR, name)); err == nil {
 		// Homebrew pinning: link in PREFIX/var/homebrew/pinned/
 		result = true
 	}
@@ -84,7 +84,7 @@ func isPinned(name string, stat os.FileInfo) (result bool) {
 }
 
 func isLeaf(name string, stat os.FileInfo) (result bool) {
-	if _, err := os.Stat(filepath.Join(config.LEAFDIR, name)); err == nil {
+	if _, err := os.Stat(filepath.Join(cfg.LEAFDIR, name)); err == nil {
 		// Homebrew pinning: link in PREFIX/var/homebrew/leaves/
 		result = true
 	}
@@ -99,7 +99,7 @@ func (formula Formula) Pin() (e error) {
 	} else {
 		// Link the current version
 		srcpath := formula.InstallDir
-		destpath := filepath.Join(config.PINDIR, formula.Name)
+		destpath := filepath.Join(cfg.PINDIR, formula.Name)
 		if err := os.Symlink(srcpath, destpath); err != nil {
 			e = err
 		}
@@ -114,7 +114,7 @@ func (formula Formula) Unpin() (e error) {
 		fmt.Fprintf(os.Stderr, "Bottle '%s' not pinned\n", formula.Name)
 	} else {
 		// Remove the existing link
-		if err := os.Remove(filepath.Join(config.PINDIR, formula.Name)); err != nil {
+		if err := os.Remove(filepath.Join(cfg.PINDIR, formula.Name)); err != nil {
 			e = err
 		}
 	}
@@ -123,7 +123,7 @@ func (formula Formula) Unpin() (e error) {
 
 func (formula Formula) Out() (out string) {
 	out = formula.Name
-	if config.Fancy {
+	if cfg.Fancy {
 		out = out + StatusMap[formula.Status]
 	}
 	return
@@ -158,7 +158,7 @@ func (allf Formulas) Ls() {
 func (formula Formula) GetCellar() string {
 	result := formula.Bottle.Stable.Cellar
 	if formula.Installable() {
-		result = config.CELLAR
+		result = cfg.CELLAR
 	}
 	return result
 }
@@ -173,7 +173,7 @@ func (formula Formula) GetVersion() string {
 
 func (formula Formula) Installable() bool {
 	return strings.HasPrefix(formula.Bottle.Stable.Cellar, ":any") ||
-		formula.Bottle.Stable.Cellar == config.CELLAR
+		formula.Bottle.Stable.Cellar == cfg.CELLAR
 }
 
 func (formula Formula) Installed() bool {
@@ -213,7 +213,7 @@ func (f Formula) getKegReason() (result string) {
 	if strings.Contains(f.Name, "@") {
 		result = "this is an alternate version of another formula"
 	} else {
-		result = fmt.Sprintf("%s provides an older %s", config.OS_NAME, f.Name)
+		result = fmt.Sprintf("%s provides an older %s", cfg.OS_NAME, f.Name)
 	}
 	return
 }
@@ -240,7 +240,7 @@ func (f Formula) GetCaveatReport() (results map[string]string) {
 	if len(results) > 0 {
 		// Fill in the fixed stuff
 		results["Name"] = f.Name
-		results["OS"] = config.OS_NAME
+		results["OS"] = cfg.OS_NAME
 		results["Prefix"] = f.Bottle.Stable.Prefix
 	}
 	return

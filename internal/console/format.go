@@ -2,7 +2,7 @@ package console
 
 import (
 	"fmt"
-	"github.com/gromgit/pour/internal/config"
+	cfg "github.com/gromgit/pour/internal/config"
 	"os"
 	"strings"
 	"unicode/utf8"
@@ -43,7 +43,7 @@ func (strs FancyStrSlice) Columnate() string {
 	nstrs := len(strs)
 	result := ""
 	if nstrs > 0 {
-		if config.Fancy {
+		if cfg.Fancy {
 			// First find the longest width
 			maxwidth := 0
 			for _, s := range strs {
@@ -55,13 +55,13 @@ func (strs FancyStrSlice) Columnate() string {
 			maxwidth += 2 // Add two spaces to each column
 			strfmt := fmt.Sprintf("%%-%ds", maxwidth)
 			var cols int
-			if maxwidth > config.ScreenWidth {
+			if maxwidth > cfg.ScreenWidth {
 				cols = 1
 			} else {
-				cols = config.ScreenWidth / maxwidth
+				cols = cfg.ScreenWidth / maxwidth
 			}
 			stride := (nstrs + cols - 1) / cols
-			fmt.Fprintf(os.Stderr, "Fmt: %q  Screen: (%d,%d)  Cols: %d  Stride: %d\n", strfmt, 0, config.ScreenWidth, cols, stride)
+			fmt.Fprintf(os.Stderr, "Fmt: %q  Screen: (%d,%d)  Cols: %d  Stride: %d\n", strfmt, 0, cfg.ScreenWidth, cols, stride)
 			// Let's run through the elements
 			if stride == 0 {
 				// Single row, so just walk through strs

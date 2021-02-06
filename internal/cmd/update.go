@@ -3,7 +3,7 @@ package cmd
 import (
 	"errors"
 	"fmt"
-	"github.com/gromgit/pour/internal/config"
+	cfg "github.com/gromgit/pour/internal/config"
 	"github.com/gromgit/pour/internal/net"
 	"os"
 	"path/filepath"
@@ -15,8 +15,8 @@ func Update(path string) error {
 		return errors.New("cannot create directory " + dirpath)
 	}
 	fmt.Printf("Updating %s\n", path)
-	if err := net.DownloadFile(path, config.JSON_URL); err != nil {
-		return errors.New("cannot download " + config.JSON_URL + ": " + err.Error())
+	if err := net.DownloadFile(path, cfg.JSON_URL); err != nil {
+		return errors.New("cannot download " + cfg.JSON_URL + ": " + err.Error())
 	}
 	return nil
 }
