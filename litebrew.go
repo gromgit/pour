@@ -18,7 +18,7 @@ func help(args []string) {
   pin [<formula>...]
   unpin [<formula>...]
   update, up
-  outdated [-q|--quiet] [-v|--verbose] [formula]
+  outdated
   upgrade [<formula>...]
   uninstall, remove, rm <formula>...
   list, ls [<formula>...]
@@ -80,6 +80,8 @@ func main() {
 		cmd.Uninstall(formulas, os.Args[2:])
 	case "list", "ls":
 		cmd.List(formulas, os.Args[2:])
+	case "outdated":
+		cmd.Outdated(formulas, os.Args[2:])
 	default:
 		fmt.Printf("Unknown subcommand '%s'\n", os.Args[1])
 		os.Exit(1)
