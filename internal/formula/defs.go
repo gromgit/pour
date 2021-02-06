@@ -81,3 +81,14 @@ var StatusMap = map[int]string{
 	INSTALLED: " ✓",
 	OUTDATED:  " ✗",
 }
+
+// Various formula-related enumerations
+const (
+	RUN = iota
+	BUILD
+	RECOMMENDED
+	OPTIONAL
+	INSTALLED
+	OUTDATED
+	MISSING
+)
