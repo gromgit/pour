@@ -8,15 +8,14 @@ import (
 	t "text/template"
 )
 
-type templateMap map[string]*t.Template
-type templateData struct {
+type infoData struct {
 	Me      formula.Formula
 	All     formula.Formulas
 	Deps    map[string]string
 	Caveats map[string]string
 }
 
-var templates templateMap
+var infoTemplates map[string]*t.Template
 
 var funcMap = t.FuncMap{
 	"status": func(status int) string {
@@ -28,8 +27,8 @@ var funcMap = t.FuncMap{
 }
 
 func init() {
-	templates = make(templateMap)
-	templates["main"] = t.Must(t.New("main").Funcs(funcMap).Parse(`{{.Me.Name}}: stable {{.Me.GetVersion}}
+	infoTemplates = make(map[string]*t.Template)
+	infoTemplates["main"] = t.Must(t.New("main").Funcs(funcMap).Parse(`{{.Me.Name}}: stable {{.Me.GetVersion}}
 {{- if .Me.Pinned}} [pinned]{{end}}
 {{.Me.Desc}}
 {{url .Me.Homepage}}
@@ -69,12 +68,16 @@ For pkg-config to find {{.Caveats.Name}} you may need to set:
 }
 
 func Info(allf formula.Formulas, args []string) {
-	tMain := templates["main"]
+	tMain := infoTemplates["main"]
 	for _, i := range args {
 		if f := allf[i]; f.Name != "" {
-			err := tMain.Execute(os.Stdout, templateData{f, allf, f.GetDepReport(allf), f.GetCaveatReport()})
-			if err != nil {
-				log.Println("executing main template:", err)
+			if err := tMain.Execute(
+				os.Stdout,
+				infoData{f,
+					allf,
+					f.GetDepReport(allf),
+					f.GetCaveatReport()}); err != nil {
+				log.Println("executing info template:", err)
 				continue
 			}
 		}
