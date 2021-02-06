@@ -7,4 +7,7 @@ fmt:
 	scripts/fmt.sh
 
 install:
-	go install litebrew.go
+	scripts/build.sh
+
+build_all:
+	scripts/build.sh all
