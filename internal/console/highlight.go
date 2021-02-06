@@ -5,6 +5,8 @@ const (
 	RESET          = "0"
 	BOLD_ON        = "1"
 	BOLD_OFF       = "22"
+	DIM_ON         = "2"
+	DIM_OFF        = BOLD_OFF
 	UNDERSCORE_ON  = "4"
 	UNDERSCORE_OFF = "24"
 	BLINK_ON       = "5"
@@ -15,6 +17,7 @@ const (
 
 var (
 	Bold       = Set(BOLD_ON)
+	Dim        = Set(DIM_ON)
 	Underscore = Set(UNDERSCORE_ON)
 	Off        = Reset()
 )
