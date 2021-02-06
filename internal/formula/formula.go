@@ -146,14 +146,16 @@ func (formulas Formulas) Filter(fn func(item Formula) bool) Formulas {
 }
 
 func (formulas Formulas) Ls() {
-	installed_fmt := console.Set(console.BOLD_ON) + "%s ✔︎\n" + console.Reset()
+	var flist []console.FancyString
+	bold := console.Set(console.BOLD_ON)
 	for _, i := range formulas {
 		if i.Installed {
-			fmt.Printf(installed_fmt, i.Name)
+			flist = append(flist, console.FancyString{i.Name + " ✓", bold})
 		} else {
-			fmt.Println(i.Name)
+			flist = append(flist, console.FancyString{i.Name, ""})
 		}
 	}
+	fmt.Print(console.Columnate(flist))
 }
 
 func (formula Formula) GetCellar() string {
