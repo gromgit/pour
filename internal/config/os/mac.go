@@ -8,7 +8,7 @@ import (
 )
 
 const OS_NAME = "macOS"
-const JSON_URL = "https://formulae.brew.sh/api/formula.json"
+const JSON_URL = "https://tclish.org/pour/bottles-macos.json"
 const DEFAULT_PREFIX = "/usr/local"
 
 func GetDeps() []string {

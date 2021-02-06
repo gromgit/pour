@@ -12,7 +12,7 @@ import (
 )
 
 const OS_NAME = "Linux"
-const JSON_URL = "https://formulae.brew.sh/api/formula-linux.json"
+const JSON_URL = "https://tclish.org/pour/bottles-linux64.json"
 const DEFAULT_PREFIX = "/home/linuxbrew/.linuxbrew"
 
 var LOADER string
