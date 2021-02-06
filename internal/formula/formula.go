@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"reflect"
 	"sort"
 	"strconv"
 	"strings"
@@ -35,6 +36,8 @@ type Formula struct {
 			Cellar  string `json:"cellar"`
 			Prefix  string `json:"prefix"`
 			RootURL string `json:"root_url"`
+			URL     string `json:"-"`
+			Sha256  string `json:"-"`
 			Files   struct {
 				Catalina struct {
 					URL    string `json:"url"`
@@ -70,7 +73,6 @@ type Formula struct {
 	Requirements            []string `json:"requirements"`
 	ConflictsWith           []string `json:"conflicts_with"`
 	Caveats                 string   `json:"caveats"`
-	Installed               bool
 	/*
 		LinkedKeg               string   `json:"linked_keg"`
 		Pinned                  bool          `json:"pinned"`
@@ -106,6 +108,8 @@ type Formula struct {
 		Bottle struct {
 		} `json:"bottle,omitempty"`
 	*/
+	Status                  int      `json:"-"`
+	InstallDir              string   `json:"-"`
 }
 
 type Formulas map[string]Formula
@@ -124,12 +128,23 @@ func (formulas *Formulas) Load(json_path string) error {
 	var instcount = 0
 	*formulas = make(Formulas)
 	for _, i := range result {
-		if i.Versions.Bottle {
-			var fpath = filepath.Join(i.GetCellar(), i.Name, i.GetVersion())
-			if _, err := os.Stat(fpath); err == nil {
-				i.Installed = true
+		if !i.BottleDisabled && i.Versions.Bottle {
+			// Check if installed
+			i.InstallDir = filepath.Join(i.GetCellar(), i.Name, i.GetVersion())
+			if _, err := os.Stat(i.InstallDir); err == nil {
+				i.Status = INSTALLED
 				instcount++
+			} else if _, err := os.Stat(filepath.Dir(i.InstallDir)); err == nil {
+				i.Status = OUTDATED
+				instcount++
+			} else {
+				i.Status = MISSING
 			}
+			// Look up proper URL / SHA256
+			baseVal := reflect.ValueOf(i.Bottle.Stable.Files).FieldByName(config.OS_FIELD)
+			i.Bottle.Stable.URL = baseVal.FieldByName("URL").String()
+			i.Bottle.Stable.Sha256 = baseVal.FieldByName("Sha256").String()
+			// Record it officially
 			(*formulas)[i.Name] = i
 		}
 	}
@@ -158,10 +173,9 @@ func (formulas Formulas) Filter(fn func(item Formula) bool) Formulas {
 
 func (formulas Formulas) Ls() {
 	var flist []console.FancyString
-	bold := console.Set(console.BOLD_ON)
 	for _, i := range formulas {
-		if i.Installed {
-			flist = append(flist, console.FancyString{i.Out(), bold})
+		if i.Status == INSTALLED {
+			flist = append(flist, console.FancyString{i.Out(), console.Bold})
 		} else {
 			flist = append(flist, console.FancyString{i.Out(), ""})
 		}
@@ -185,3 +199,14 @@ func (formula Formula) GetVersion() string {
 	}
 	return result
 }
+
+// Various formula-related enumerations
+const (
+	RUN = iota
+	BUILD
+	RECOMMENDED
+	OPTIONAL
+	INSTALLED
+	OUTDATED
+	MISSING
+)
