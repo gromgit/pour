@@ -42,3 +42,7 @@ func GetOS() (os string) {
 	}
 	return
 }
+
+func PatchExec(base, prefix string) (err error) {
+	return
+}

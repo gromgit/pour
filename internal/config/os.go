@@ -16,6 +16,7 @@ const DEFAULT_VAR_PATH = DEFAULT_PREFIX + VAR_SUBPATH
 var PREFIX = DEFAULT_PREFIX
 var OS_FIELD = oscfg.GetOS()
 var OS_DEPS = oscfg.GetDeps()
+var PatchExec = oscfg.PatchExec
 
 var CELLAR string
 var OPTDIR string
