@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/gromgit/litebrew/internal/cmd"
-	"github.com/gromgit/litebrew/internal/config"
+	cfg "github.com/gromgit/litebrew/internal/config"
 	"github.com/gromgit/litebrew/internal/formula"
 	"os"
 )
@@ -32,10 +32,10 @@ func fatal(args ...interface{}) {
 
 func baseChecks() {
 	// Check for basic writability in DEFAULT_PREFIX
-	if _, err := os.Stat(config.DEFAULT_PREFIX); os.IsNotExist(err) {
-		fatal("Litebrew base dir", config.DEFAULT_PREFIX, "doesn't exist")
-	} else if err = os.MkdirAll(config.VAR_PATH, 0775); err != nil {
-		fatal("Can't create", config.VAR_PATH, ":", err)
+	if _, err := os.Stat(cfg.DEFAULT_PREFIX); os.IsNotExist(err) {
+		fatal("Litebrew base dir", cfg.DEFAULT_PREFIX, "doesn't exist")
+	} else if err = os.MkdirAll(cfg.VAR_PATH, 0775); err != nil {
+		fatal("Can't create", cfg.VAR_PATH, ":", err)
 	}
 }
 
@@ -68,7 +68,7 @@ func doMeta(json_path string, args []string) (rtn int, quit bool) {
 
 func main() {
 	baseChecks()
-	json_path := config.JSON_PATH
+	json_path := cfg.JSON_PATH
 	if rtn, quit := doMeta(json_path, os.Args); quit {
 		os.Exit(rtn)
 	}
