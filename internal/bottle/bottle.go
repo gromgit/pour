@@ -38,9 +38,11 @@ func Install(f formula.Formula) error {
 	// Unpack into temp dir
 	if tempDir, err := ioutil.TempDir(cfg.TEMPDIR, "inst"); err != nil {
 		return err
-	} else if err := Unpack(tarPath, tempDir); err != nil {
-		return err
 	} else {
+		defer os.RemoveAll(tempDir)
+		if err := Unpack(tarPath, tempDir); err != nil {
+			return err
+		}
 		// TODO: Move it into place
 		cfg.Log("Unpacked to", tempDir)
 	}
