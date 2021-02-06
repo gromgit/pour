@@ -80,27 +80,30 @@ func main() {
 	}
 	allf.Load(json_path)
 
+	var err error
 	switch os.Args[1] {
 	case "search":
-		cmd.Search(allf, os.Args[2:])
+		err = cmd.Search(allf, os.Args[2:])
 	case "info":
-		cmd.Info(allf, os.Args[2:])
+		err = cmd.Info(allf, os.Args[2:])
 	case "install":
-		cmd.Install(&allf, os.Args[2:])
+		err = cmd.Install(&allf, os.Args[2:])
 	case "pin":
-		cmd.Pin(allf, os.Args[2:])
+		err = cmd.Pin(allf, os.Args[2:])
 	case "unpin":
-		cmd.Unpin(allf, os.Args[2:])
+		err = cmd.Unpin(allf, os.Args[2:])
 	case "upgrade":
-		cmd.Upgrade(allf, os.Args[2:])
+		err = cmd.Upgrade(allf, os.Args[2:])
 	case "uninstall", "remove", "rm":
-		cmd.Uninstall(allf, os.Args[2:])
+		err = cmd.Uninstall(allf, os.Args[2:])
 	case "list", "ls":
-		cmd.List(allf, os.Args[2:])
+		err = cmd.List(allf, os.Args[2:])
 	case "outdated":
-		cmd.Outdated(allf, os.Args[2:])
+		err = cmd.Outdated(allf, os.Args[2:])
 	default:
-		fmt.Printf("Unknown subcommand '%s'\n", os.Args[1])
-		os.Exit(1)
+		err = fmt.Errorf("Unknown subcommand '%s'", os.Args[1])
+	}
+	if err != nil {
+		fatal(err)
 	}
 }

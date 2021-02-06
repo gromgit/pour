@@ -35,7 +35,7 @@ func DescGetter(item formula.Formula) string {
 	return item.Desc
 }
 
-func Search(allf formula.Formulas, args []string) {
+func Search(allf formula.Formulas, args []string) error {
 	var matcher func(s string) bool
 	var getter func(item formula.Formula) string
 	fmt.Printf("Doing search %v\n", args)
@@ -64,4 +64,5 @@ func Search(allf formula.Formulas, args []string) {
 			}).
 			Ls()
 	}
+	return nil
 }

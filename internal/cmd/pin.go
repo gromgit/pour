@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-func Pin(allf formula.Formulas, args []string) {
+func Pin(allf formula.Formulas, args []string) error {
 	if len(args) > 0 {
 		// Pin some formulas
 		for _, i := range args {
@@ -27,9 +27,10 @@ func Pin(allf formula.Formulas, args []string) {
 			}).
 			Ls()
 	}
+	return nil
 }
 
-func Unpin(allf formula.Formulas, args []string) {
+func Unpin(allf formula.Formulas, args []string) error {
 	if len(args) > 0 {
 		// Unpin some formulas
 		for _, i := range args {
@@ -50,4 +51,5 @@ func Unpin(allf formula.Formulas, args []string) {
 			}).
 			Ls()
 	}
+	return nil
 }

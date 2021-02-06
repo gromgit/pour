@@ -5,7 +5,7 @@ import (
 	"github.com/gromgit/litebrew/internal/formula"
 )
 
-func Install(allf *formula.Formulas, args []string) {
+func Install(allf *formula.Formulas, args []string) (err error) {
 	for _, name := range args {
 		f := (*allf)[name]
 		if f.Name != "" {
@@ -22,4 +22,5 @@ func Install(allf *formula.Formulas, args []string) {
 			}
 		}
 	}
+	return
 }

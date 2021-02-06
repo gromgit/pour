@@ -67,7 +67,7 @@ For pkg-config to find {{.Caveats.Name}} you may need to set:
 {{- end}}`))
 }
 
-func Info(allf formula.Formulas, args []string) {
+func Info(allf formula.Formulas, args []string) error {
 	tMain := infoTemplates["main"]
 	for _, i := range args {
 		if f := allf[i]; f.Name != "" {
@@ -82,4 +82,5 @@ func Info(allf formula.Formulas, args []string) {
 			}
 		}
 	}
+	return nil
 }

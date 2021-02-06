@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 )
 
-func List(allf formula.Formulas, args []string) {
+func List(allf formula.Formulas, args []string) error {
 	if len(args) > 0 {
 		for _, name := range args {
 			f := allf[name]
@@ -40,12 +40,14 @@ func List(allf formula.Formulas, args []string) {
 			}).
 			Ls()
 	}
+	return nil
 }
 
-func Outdated(allf formula.Formulas, args []string) {
+func Outdated(allf formula.Formulas, args []string) error {
 	allf.Filter(
 		func(item formula.Formula) bool {
 			return item.Status == formula.OUTDATED
 		}).
 		Ls()
+	return nil
 }
