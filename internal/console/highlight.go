@@ -13,6 +13,12 @@ const (
 	REVERSE_OFF    = "27"
 )
 
+var (
+	Bold       = Set(BOLD_ON)
+	Underscore = Set(UNDERSCORE_ON)
+	Off        = Reset()
+)
+
 func Set(attrs ...string) string {
 	if len(attrs) > 0 {
 		result := CSI + attrs[0]
