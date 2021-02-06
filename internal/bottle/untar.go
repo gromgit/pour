@@ -7,9 +7,10 @@ package bottle
 
 import (
 	"archive/tar"
+	"bufio"
 	"compress/gzip"
 	"fmt"
-	"github.com/h2non/filetype"
+	"github.com/gromgit/pour/internal/file"
 	"io"
 	"log"
 	"os"
@@ -25,19 +26,28 @@ import (
 // buildlet can use this code somehow.
 
 // Untar reads the gzip-compressed tar file from r and writes it into dir.
-func Untar(r io.Reader, dir string) error {
-	return untar(r, dir)
-}
-
-func GetTypeFromPath(path string) (string, error) {
-	if _, err := os.Stat(path); err != nil {
-		return "", err
-	}
-	ft, err := filetype.MatchFile(path)
-	if err != nil {
-		return "", err
+func Untar(path string, dir string) error {
+	if t, err := file.GetTypeFromPath(path); err != nil {
+		return err
 	} else {
-		return ft.MIME.Value, nil
+		file, err := os.Open(path)
+		if err != nil {
+			return fmt.Errorf("Can't open %s: %v", path, err)
+		}
+		r := bufio.NewReader(file)
+		var tr io.Reader
+		switch t {
+		case "application/gzip":
+			tr, err = gzip.NewReader(r)
+			if err != nil {
+				return fmt.Errorf("Can't open %s as gzipped: %v", path, err)
+			}
+		case "application/x-tar":
+			tr = r
+		default:
+			return fmt.Errorf("%s has unrecognized file type %s", path, t)
+		}
+		return untar(tr, dir)
 	}
 }
 
@@ -53,11 +63,7 @@ func untar(r io.Reader, dir string) (err error) {
 			log.Printf("error extracting tarball into %s after %d files, %d dirs, %v: %v", dir, nFiles, len(madeDir), td, err)
 		}
 	}()
-	zr, err := gzip.NewReader(r)
-	if err != nil {
-		return fmt.Errorf("requires gzip-compressed body: %v", err)
-	}
-	tr := tar.NewReader(zr)
+	tr := tar.NewReader(r)
 	loggedChtimesError := false
 	for {
 		f, err := tr.Next()
