@@ -17,7 +17,9 @@ func getFilelist(list *[]string) func(path string, info os.FileInfo, err error) 
 		}
 		if info.IsDir() {
 			switch info.Name() {
-			case ".brew", ".bottle", "libexec":
+			case ".", "bin", "etc", "include", "lib", "man", "opt", "sbin", "share", "var":
+				log.Println("Linking dir", path)
+			default:
 				log.Println("Skipping", path)
 				return filepath.SkipDir
 			}
