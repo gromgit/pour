@@ -24,9 +24,7 @@ type Formula struct {
 	Homepage          string   `json:"homepage"`
 	Versions          struct {
 		Stable string `json:"stable"`
-		// Devel  interface{} `json:"devel"`
-		// Head   interface{} `json:"head"`
-		Bottle bool `json:"bottle"`
+		Bottle bool   `json:"bottle"`
 	} `json:"versions"`
 	Revision      int `json:"revision"`
 	VersionScheme int `json:"version_scheme"`
@@ -42,23 +40,35 @@ type Formula struct {
 				Catalina struct {
 					URL    string `json:"url"`
 					Sha256 string `json:"sha256"`
-				} `json:"catalina"`
+				} `json:"catalina,omitempty"`
 				Mojave struct {
 					URL    string `json:"url"`
 					Sha256 string `json:"sha256"`
-				} `json:"mojave"`
+				} `json:"mojave,omitempty"`
 				HighSierra struct {
 					URL    string `json:"url"`
 					Sha256 string `json:"sha256"`
-				} `json:"high_sierra"`
+				} `json:"high_sierra,omitempty"`
 				Sierra struct {
 					URL    string `json:"url"`
 					Sha256 string `json:"sha256"`
-				} `json:"sierra"`
+				} `json:"sierra,omitempty"`
 				ElCapitan struct {
 					URL    string `json:"url"`
 					Sha256 string `json:"sha256"`
-				} `json:"el_capitan"`
+				} `json:"el_capitan,omitempty"`
+				Yosemite struct {
+					URL    string `json:"url"`
+					Sha256 string `json:"sha256"`
+				} `json:"yosemite,omitempty"`
+				Mavericks struct {
+					URL    string `json:"url"`
+					Sha256 string `json:"sha256"`
+				} `json:"mavericks,omitempty"`
+				Linux64 struct {
+					URL    string `json:"url"`
+					Sha256 string `json:"sha256"`
+				} `json:"x86_64_linux,omitempty"`
 			} `json:"files"`
 		} `json:"stable"`
 	} `json:"bottle,omitempty"`
@@ -73,46 +83,17 @@ type Formula struct {
 	Requirements            []string `json:"requirements"`
 	ConflictsWith           []string `json:"conflicts_with"`
 	Caveats                 string   `json:"caveats"`
-	/*
-		LinkedKeg               string   `json:"linked_keg"`
-		Pinned                  bool          `json:"pinned"`
-		Outdated                bool          `json:"outdated"`
-		Bottle                  struct {
-		} `json:"bottle,omitempty"`
-		Bottle struct {
-		} `json:"bottle,omitempty"`
-		Bottle struct {
-		} `json:"bottle,omitempty"`
-		Bottle struct {
-		} `json:"bottle,omitempty"`
-		Bottle struct {
-		} `json:"bottle,omitempty"`
-		Bottle struct {
-		} `json:"bottle,omitempty"`
-		Bottle struct {
-		} `json:"bottle,omitempty"`
-		Bottle struct {
-		} `json:"bottle,omitempty"`
-		Bottle struct {
-		} `json:"bottle,omitempty"`
-		Bottle struct {
-		} `json:"bottle,omitempty"`
-		Bottle struct {
-		} `json:"bottle,omitempty"`
-		Bottle struct {
-		} `json:"bottle,omitempty"`
-		Bottle struct {
-		} `json:"bottle,omitempty"`
-		Bottle struct {
-		} `json:"bottle,omitempty"`
-		Bottle struct {
-		} `json:"bottle,omitempty"`
-	*/
 	Status                  int      `json:"-"`
 	InstallDir              string   `json:"-"`
+	Pinned                  bool     `json:"-"`
 }
 
 type Formulas map[string]Formula
+
+var StatusMap = map[int]string{
+	INSTALLED: " ✓",
+	OUTDATED:  " ✗",
+}
 
 func (formulas *Formulas) Load(json_path string) error {
 	// Parse the formulas JSON
@@ -131,11 +112,13 @@ func (formulas *Formulas) Load(json_path string) error {
 		if !i.BottleDisabled && i.Versions.Bottle {
 			// Check if installed
 			i.InstallDir = filepath.Join(i.GetCellar(), i.Name, i.GetVersion())
-			if _, err := os.Stat(i.InstallDir); err == nil {
+			if stat, err := os.Stat(i.InstallDir); err == nil {
 				i.Status = INSTALLED
+				i.Pinned = isPinned(i.Name, stat)
 				instcount++
-			} else if _, err := os.Stat(filepath.Dir(i.InstallDir)); err == nil {
+			} else if stat, err := os.Stat(filepath.Dir(i.InstallDir)); err == nil {
 				i.Status = OUTDATED
+				i.Pinned = isPinned(i.Name, stat)
 				instcount++
 			} else {
 				i.Status = MISSING
@@ -152,11 +135,21 @@ func (formulas *Formulas) Load(json_path string) error {
 	return nil
 }
 
+func isPinned(name string, stat os.FileInfo) (result bool) {
+	if stat.Mode()&os.ModeSticky > 0 {
+		// Litebrew pinning: sticky bit on install dir
+		result = true
+	} else if _, err := os.Stat(config.DEFAULT_PREFIX + "/var/homebrew/pinned/" + name); err == nil {
+		// Homebrew pinning: link in PREFIX/var/homebrew/pinned/
+		result = true
+	}
+	return
+}
+
 func (formula Formula) Out() (out string) {
 	out = formula.Name
-	if config.Fancy && formula.Installed {
-		// Add installed checkmark
-		out = out + " ✓"
+	if config.Fancy {
+		out = out + StatusMap[formula.Status]
 	}
 	return
 }
