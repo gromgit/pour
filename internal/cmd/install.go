@@ -77,7 +77,7 @@ func Install(allf *formula.Formulas, args []string) (err error) {
 func Link(allf *formula.Formulas, args []string) (err error) {
 	for _, name := range args {
 		f := (*allf)[name]
-		if f.Status != formula.MISSING && f.InstallDir != "" {
+		if f.Installed() && f.InstallDir != "" {
 			rel, err := filepath.Rel(cfg.CELLAR, f.InstallDir)
 			if err != nil {
 				return err

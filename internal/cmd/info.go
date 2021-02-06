@@ -113,7 +113,7 @@ SearchOptions:
 	if installed {
 		var newArgs []string
 		for _, n := range args {
-			if allf[n].Status != formula.MISSING {
+			if allf[n].Installed() {
 				newArgs = append(newArgs, n)
 			}
 		}
@@ -146,7 +146,7 @@ SearchOptions:
 		// Filter for installed?
 		if installed {
 			result = result.Filter(func(f formula.Formula) bool {
-				return f.Status != formula.MISSING
+				return f.Installed()
 			})
 		}
 		result.Ls()

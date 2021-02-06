@@ -176,6 +176,9 @@ func (formula Formula) Installable() bool {
 		formula.Bottle.Stable.Cellar == config.CELLAR
 }
 
+func (formula Formula) Installed() bool {
+	return formula.Status != MISSING
+}
 
 // Formula reports (mostly for "info" cmd)
 func (allf Formulas) GetDepStr(depList []string) (result string) {

@@ -36,7 +36,7 @@ func List(allf formula.Formulas, args []string) error {
 		// List installed bottles
 		allf.Filter(
 			func(item formula.Formula) bool {
-				return item.Status != formula.MISSING
+				return item.Installed()
 			}).
 			Ls()
 	}
