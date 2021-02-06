@@ -7,9 +7,28 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strings"
 )
 
-// Ref: https://golangcode.com/download-a-file-from-a-url/
+var ppfmt = "\r" + strings.Repeat(" ", 35) + "\rDownloading... %5.1f%% complete"
+
+// Ref: https://golangcode.com/download-a-file-with-progress/
+type PercentProgress struct {
+	Expected, Total uint64
+}
+
+func (pp *PercentProgress) Write(p []byte) (int, error) {
+	n := len(p)
+	pp.Total += uint64(n)
+	pp.PrintProgress()
+	return n, nil
+}
+
+func (pp PercentProgress) PrintProgress() {
+	pct := float64(pp.Total) * 100.0 / float64(pp.Expected)
+	fmt.Fprintf(os.Stderr, ppfmt, pct)
+}
+
 func DownloadFile(filepath string, url string) error {
 
 	log.Log("Downloading", url)
@@ -22,15 +41,25 @@ func DownloadFile(filepath string, url string) error {
 	defer resp.Body.Close()
 
 	// Create the file
-	out, err := os.Create(filepath)
+	out, err := os.Create(filepath + ".tmp")
 	if err != nil {
 		return err
 	}
 	defer out.Close()
 
-	// Write the body to file
-	_, err = io.Copy(out, resp.Body)
-	return err
+	// Create progress reporter and write the body to file
+	pp := &PercentProgress{uint64(resp.ContentLength), 0}
+	if _, err = io.Copy(out, io.TeeReader(resp.Body, pp)); err != nil {
+		return err
+	}
+	// The progress use the same line so print a new line once it's finished downloading
+	fmt.Print("\n")
+
+	// Finalize the download
+	if err = os.Rename(filepath+".tmp", filepath); err != nil {
+		return err
+	}
+	return nil
 }
 
 func ChecksumFile(filepath string, sha string) error {
