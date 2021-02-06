@@ -25,6 +25,11 @@ func help(args []string) {
   upgrade [<formula>...]`)
 }
 
+func fatal(args ...interface{}) {
+	fmt.Fprintln(os.Stderr, "FATAL ERROR:", args)
+	os.Exit(1)
+}
+
 func doMeta(json_path string, args []string) (rtn int, quit bool) {
 	rtn = 0
 	quit = true
@@ -40,7 +45,7 @@ func doMeta(json_path string, args []string) (rtn int, quit bool) {
 			cmd.Shellenv(os.Args[2:])
 		case "update", "up":
 			if err := cmd.Update(json_path); err != nil {
-				panic(err)
+				fatal("Unable to update local JSON:", err)
 			}
 		default:
 			// Not a metacommand, need to continue
@@ -57,8 +62,8 @@ func main() {
 	}
 
 	if _, err := os.Stat(json_path); os.IsNotExist(err) {
-		if err = cmd.Update(json_path); err != nil {
-			panic(err)
+		if err := cmd.Update(json_path); err != nil {
+			fatal("Unable to update local JSON:", err)
 		}
 	}
 	formulas.Load(json_path)
