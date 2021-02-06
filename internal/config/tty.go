@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"github.com/mattn/go-isatty"
 	"os"
 	"strconv"
@@ -17,5 +16,4 @@ func init() {
 	if err != nil || ScreenWidth == 0 {
 		ScreenWidth = 80 // A decent default
 	}
-	fmt.Println("ScreenWidth:", ScreenWidth)
 }
