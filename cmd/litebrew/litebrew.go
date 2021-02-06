@@ -85,7 +85,7 @@ func main() {
 	case "info":
 		cmd.Info(formulas, os.Args[2:])
 	case "install":
-		cmd.Install(formulas, os.Args[2:])
+		cmd.Install(&formulas, os.Args[2:])
 	case "pin":
 		cmd.Pin(formulas, os.Args[2:])
 	case "unpin":
