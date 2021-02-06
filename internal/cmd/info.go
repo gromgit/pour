@@ -36,7 +36,7 @@ func init() {
 {{if .Me.InstallDir -}} {{.Me.InstallDir}}{{status .Me.Status}}
   Poured from bottle on {{.Me.InstallTime}}
 {{- else}}Not installed{{end}}
-From: {{url .Me.Bottle.Stable.URL}}
+{{if .Me.Bottle.Stable.URL -}}From: {{url .Me.Bottle.Stable.URL}}{{- else}}No bottle found, cannot be installed{{end}}
 {{if .Deps -}}
 ===> Dependencies
 {{if .Deps.Required}}Required: {{.Deps.Required}}{{end -}}
